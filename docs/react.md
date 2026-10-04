@@ -67,12 +67,12 @@ const ref = useModule(dialog, undefined, (instance) => (api.current = instance))
 import { Expand, useFlip } from 'kit/react/index.js'
 
 // Список меняется (фильтр, добавили/удалили) — элементы плавно едут на новые места.
-const flip = useFlip(items.map((i) => i.id).join())
+const [listRef, capture] = useFlip(items.map((i) => i.id).join())
 const remove = (id) => {
-  flip.capture() // снимок «до» — в обработчике, перед изменением
+  capture() // снимок «до» — в обработчике, перед изменением
   setItems((list) => list.filter((i) => i.id !== id))
 }
-<div ref={flip.ref}>{items.map((i) => <Card key={i.id} … />)}</div>
+<div ref={listRef}>{items.map((i) => <Card key={i.id} … />)}</div>
 
 // Блок появляется — раскрывается по высоте, соседи плавно отъезжают.
 <Expand open={showHint}><p>Подсказка</p></Expand>

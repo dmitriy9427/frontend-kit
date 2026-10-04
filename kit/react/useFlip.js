@@ -1,12 +1,15 @@
 /**
  * useFlip — плавная перестановка элементов при изменении списка (FLIP, GSAP Flip).
  *
- *   const flip = useFlip(items.map((i) => i.id).join())   // ключ — «состав» списка
+ *   const [listRef, capture] = useFlip(items.map((i) => i.id).join())  // ключ — «состав» списка
  *   const remove = (id) => {
- *     flip.capture()                  // 1. запомнить, где всё стоит СЕЙЧАС
+ *     capture()                       // 1. запомнить, где всё стоит СЕЙЧАС
  *     setItems((list) => list.filter((i) => i.id !== id))  // 2. изменить
  *   }                                 // 3. хук сам доиграет: старые места → новые
- *   return <ul ref={flip.ref}>{items.map((i) => <li key={i.id}>…</li>)}</ul>
+ *   return <ul ref={listRef}>{items.map((i) => <li key={i.id}>…</li>)}</ul>
+ *
+ * Возвращает пару [ref, capture] — как useState: имена выбираете сами, когда
+ * в компоненте несколько анимируемых списков.
  *
  * Без него при добавлении/удалении/фильтрации элементы «перескакивают», а
  * соседи дёргаются. С ним — едут со старых мест, новые проявляются.
@@ -40,7 +43,7 @@ gsap.registerPlugin(Flip)
  * @template [T=HTMLElement]
  * @param {string | number | boolean | null | undefined} key Меняется — анимируем (если был capture()).
  * @param {{ selector?: string, duration?: number, ease?: string, absolute?: boolean }} [options]
- * @returns {{ ref: import('react').RefObject<T | null>, capture: () => void }}
+ * @returns {[import('react').RefObject<T | null>, () => void]}
  */
 export function useFlip(
   key,
@@ -74,5 +77,5 @@ export function useFlip(
     return () => animation.progress(1).kill()
   }, [key, selector, duration, ease, absolute])
 
-  return { ref, capture }
+  return [ref, capture]
 }

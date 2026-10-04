@@ -160,12 +160,12 @@ describe('хуки', () => {
 describe('без «плясок» вёрстки', () => {
   it('useFlip: анимирует только после capture() и смены ключа', async () => {
     const from = vi.spyOn(Flip, 'from')
-    let flipApi
+    let captureList
     function List({ items }) {
-      const flip = useFlip(items.join())
-      flipApi = flip
+      const [listRef, capture] = useFlip(items.join())
+      captureList = capture
       return (
-        <ul ref={flip.ref}>
+        <ul ref={listRef}>
           {items.map((i) => (
             <li key={i}>{i}</li>
           ))}
@@ -175,7 +175,7 @@ describe('без «плясок» вёрстки', () => {
     const { rerender } = render(<List items={['a', 'b']} />)
     rerender(<List items={['b', 'a']} />) // без снимка — без анимации
     expect(from).not.toHaveBeenCalled()
-    flipApi.capture()
+    captureList()
     rerender(<List items={['b', 'a', 'c']} />)
     expect(from).toHaveBeenCalledTimes(1)
     expect(from.mock.calls[0][1].targets).toHaveLength(3)
