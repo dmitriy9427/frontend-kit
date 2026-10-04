@@ -16,3 +16,5 @@
 export { KitProvider, useKit } from './provider.jsx'
 export { useModule } from './useModule.js'
 export { useBus, useBreakpoint, useMediaQuery, useReducedMotion } from './hooks.js'
+export { useFlip } from './useFlip.js'
+export { Expand } from './Expand.jsx'

@@ -2,7 +2,18 @@ import { StrictMode, useState } from 'react'
 import { act, render, screen, fireEvent } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
-import { KitProvider, useBreakpoint, useBus, useKit, useMediaQuery, useModule, useReducedMotion } from './index.js'
+import {
+  Expand,
+  KitProvider,
+  useBreakpoint,
+  useBus,
+  useFlip,
+  useKit,
+  useMediaQuery,
+  useModule,
+  useReducedMotion,
+} from './index.js'
+import { Flip } from 'gsap/Flip'
 import accordion from '../js/modules/accordion/index.js'
 import { lazy } from '../js/core/registry.js'
 
@@ -143,5 +154,48 @@ describe('хуки', () => {
     )
     await act(async () => bus.emit('x', 1))
     expect(got).toEqual([1])
+  })
+})
+
+describe('без «плясок» вёрстки', () => {
+  it('useFlip: анимирует только после capture() и смены ключа', async () => {
+    const from = vi.spyOn(Flip, 'from')
+    let flipApi
+    function List({ items }) {
+      const flip = useFlip(items.join())
+      flipApi = flip
+      return (
+        <ul ref={flip.ref}>
+          {items.map((i) => (
+            <li key={i}>{i}</li>
+          ))}
+        </ul>
+      )
+    }
+    const { rerender } = render(<List items={['a', 'b']} />)
+    rerender(<List items={['b', 'a']} />) // без снимка — без анимации
+    expect(from).not.toHaveBeenCalled()
+    flipApi.capture()
+    rerender(<List items={['b', 'a', 'c']} />)
+    expect(from).toHaveBeenCalledTimes(1)
+    expect(from.mock.calls[0][1].targets).toHaveLength(3)
+  })
+
+  it('Expand: открыт/закрыт через data-open, закрытый — inert', () => {
+    const { container, rerender } = render(
+      <Expand open={false}>
+        <button>внутри</button>
+      </Expand>,
+    )
+    const box = container.querySelector('.expand')
+    expect(box.dataset.open).toBe('false')
+    expect(box.hasAttribute('inert')).toBe(true)
+    rerender(
+      <Expand open>
+        <button>внутри</button>
+      </Expand>,
+    )
+    expect(box.dataset.open).toBe('true')
+    expect(box.hasAttribute('inert')).toBe(false)
   })
 })

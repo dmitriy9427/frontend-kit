@@ -61,6 +61,26 @@ const ref = useModule(dialog, undefined, (instance) => (api.current = instance))
 
 Все хуки безопасны для SSR (Next.js, Astro): на сервере — значение по умолчанию.
 
+## Без «плясок» вёрстки
+
+```jsx
+import { Expand, useFlip } from 'kit/react/index.js'
+
+// Список меняется (фильтр, добавили/удалили) — элементы плавно едут на новые места.
+const flip = useFlip(items.map((i) => i.id).join())
+const remove = (id) => {
+  flip.capture() // снимок «до» — в обработчике, перед изменением
+  setItems((list) => list.filter((i) => i.id !== id))
+}
+<div ref={flip.ref}>{items.map((i) => <Card key={i.id} … />)}</div>
+
+// Блок появляется — раскрывается по высоте, соседи плавно отъезжают.
+<Expand open={showHint}><p>Подсказка</p></Expand>
+```
+
+Ключ `useFlip` — строка «состава» (не объект); `capture()` — перед каждым изменением. Подробнее — комментарии в `useFlip.js`,
+рецепты против layout shift — [troubleshooting.md](troubleshooting.md#вёрстка-и-адаптив).
+
 ## GSAP в компонентах
 
 ```jsx
