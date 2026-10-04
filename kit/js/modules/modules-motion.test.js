@@ -11,7 +11,7 @@ import marquee, { copiesNeeded } from './marquee/index.js'
 import slider, { nearestIndex } from './slider/index.js'
 import counter, { formatNumber, parseNumber } from './counter/index.js'
 import parallax from './parallax/index.js'
-import magnetic from './magnetic/index.js'
+import magnetic, { magneticShift } from './magnetic/index.js'
 import stickyHeader, { nextHidden } from './sticky-header/index.js'
 import scrollTop from './scroll-top/index.js'
 import lazyVideo from './lazy-video/index.js'
@@ -188,6 +188,40 @@ describe('parallax и magnetic', () => {
     el.dispatchEvent(new PointerEvent('pointermove', { clientX: 50, clientY: 0 }))
     api.destroy()
     expect(el.style.transform).toBe('')
+  })
+
+  it('magneticShift: центр считается без текущего сдвига (кнопка не «уплывает»)', () => {
+    const rect = { left: 110, top: 0, width: 100, height: 40 } // кнопка уже сдвинута на 10px
+    // Без сдвига кнопка занимает 100…200, центр — 150.
+    expect(magneticShift(rect, { x: 10, y: 0 }, { x: 150, y: 20 }, 0.5)).toEqual({ x: 0, y: 0 })
+    expect(magneticShift(rect, { x: 10, y: 0 }, { x: 190, y: 20 }, 0.5)).toEqual({ x: 20, y: 0 })
+  })
+
+  it('magnetic: тянется и при втором, и при третьем наведении (баг «только в первый раз»)', async () => {
+    setMedia({ '(hover: hover) and (pointer: fine)': true })
+    const el = html('<a>btn</a>')
+    setSize(el, { width: 100, height: 40 })
+    const api = magnetic(el, motion())
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms))
+    const hoverAndLeaveQuickly = async () => {
+      // Живая мышь уходит, пока кнопка ещё едет за ней, — именно это убивало эффект.
+      el.dispatchEvent(new PointerEvent('pointerenter'))
+      el.dispatchEvent(new PointerEvent('pointermove', { clientX: 100, clientY: 20 }))
+      await wait(60)
+      el.dispatchEvent(new PointerEvent('pointerleave'))
+      await wait(100)
+    }
+    for (let round = 1; round <= 3; round++) {
+      await hoverAndLeaveQuickly()
+      el.dispatchEvent(new PointerEvent('pointerenter'))
+      el.dispatchEvent(new PointerEvent('pointermove', { clientX: 100, clientY: 20 }))
+      await wait(500)
+      expect(Number(gsap.getProperty(el, 'x')), `наведение №${round}`).toBeGreaterThan(5)
+      el.dispatchEvent(new PointerEvent('pointerleave'))
+      await wait(800)
+      expect(Math.abs(Number(gsap.getProperty(el, 'x'))), `возврат №${round}`).toBeLessThan(1)
+    }
+    api.destroy()
   })
 })
 
