@@ -58,15 +58,56 @@ describe('useModule', () => {
     expect(ctx.bus).toBeTruthy()
   })
 
-  it('ленивый модуль, размонтированный до загрузки, убирается', async () => {
-    const destroy = vi.fn()
-    const mod = lazy(async () => ({ default: () => ({ destroy }) }))
+  it('StrictMode: экземпляры на элементе по очереди — отменённый не снимает общий класс', async () => {
+    // Регрессия: первый (отменённый) экземпляр асинхронного модуля запускался
+    // после второго и в destroy снимал класс, нужный живому экземпляру.
+    const inits = vi.fn()
+    async function shared(el) {
+      inits()
+      await Promise.resolve()
+      el.classList.add('is-on')
+      return { destroy: () => el.classList.remove('is-on') }
+    }
     function Box() {
-      return <div ref={useModule(mod)} />
+      return <div ref={useModule(shared)} data-testid="box" />
+    }
+    render(
+      <StrictMode>
+        <Box />
+      </StrictMode>,
+    )
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 0))
+    })
+    expect(screen.getByTestId('box').classList.contains('is-on')).toBe(true)
+    expect(inits).toHaveBeenCalledTimes(1)
+  })
+
+  it('размонтировали до запуска — модуль не запускается вовсе', async () => {
+    const init = vi.fn(() => ({ destroy: vi.fn() }))
+    function Box() {
+      return <div ref={useModule(init)} />
     }
     const { unmount } = render(<Box />)
     unmount()
     await act(async () => {
+      await new Promise((r) => setTimeout(r, 5))
+    })
+    expect(init).not.toHaveBeenCalled()
+  })
+
+  it('ленивый модуль, размонтированный во время загрузки, убирается после неё', async () => {
+    const destroy = vi.fn()
+    let finishLoading
+    const mod = lazy(() => new Promise((resolve) => (finishLoading = () => resolve({ default: () => ({ destroy }) }))))
+    function Box() {
+      return <div ref={useModule(mod)} />
+    }
+    const { unmount } = render(<Box />)
+    await act(async () => {}) // запуск начался — грузится код модуля
+    unmount()
+    await act(async () => {
+      finishLoading()
       await new Promise((r) => setTimeout(r, 5))
     })
     expect(destroy).toHaveBeenCalled()

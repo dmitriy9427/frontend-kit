@@ -24,6 +24,12 @@
  *    useCallback, иначе модуль будет перезапускаться на каждый рендер.
  * 4. ctx берётся из <KitProvider> (bus, reduced, scroll). Без провайдера
  *    модуль тоже работает — с минимальным контекстом.
+ * 5. Экземпляры на одном элементе живут строго по очереди: следующий
+ *    запускается только после того, как предыдущий запустился И убрался.
+ *    Баг был такой: в StrictMode первый (уже отменённый) экземпляр
+ *    запускался после второго и в destroy снимал общий класс — у select
+ *    пропадал select__native, и родной <select> становился виден рядом с
+ *    красивым. Отменённый до запуска экземпляр теперь не запускается вовсе.
  *
  * ─── Важно: React и DOM ─────────────────────────────────────────────────────
  * Модули кита меняют атрибуты (aria-*, hidden, классы is-*), но не
@@ -40,6 +46,8 @@ import { KitContext } from './context.js'
 import { prefersReducedMotion } from '../js/core/env.js'
 
 const ids = new WeakMap()
+/** Элемент → обещание «предыдущий экземпляр запущен и убран» (п. 5). */
+const queues = new WeakMap()
 let lastId = 0
 /** Ключ опций: примитивы — по значению, функции/объекты — по ссылке. */
 export function optionsKey(options = {}) {
@@ -88,8 +96,8 @@ export function useModule(init, options, onInstance) {
       options: latestOptions.current ?? {},
     })
 
-    Promise.resolve()
-      .then(() => init(el, ctx))
+    const run = (queues.get(el) ?? Promise.resolve())
+      .then(() => (alive ? init(el, ctx) : null))
       .then((result) => {
         if (!alive) return result?.destroy?.()
         destroy = result?.destroy ?? null
@@ -97,6 +105,7 @@ export function useModule(init, options, onInstance) {
         return undefined
       })
       .catch((error) => console.error('[kit] useModule: модуль упал при запуске', error))
+    queues.set(el, run)
 
     return () => {
       alive = false
