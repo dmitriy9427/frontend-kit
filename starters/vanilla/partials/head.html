@@ -1,0 +1,25 @@
+<!--
+  Общая часть <head> всех страниц. Переменные: title, description.
+  Подключение: <include src="head.html" title="…" description="…"></include>
+-->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{{ title | Новый проект }}</title>
+<meta name="description" content="{{ description | Описание проекта }}" />
+<meta property="og:title" content="{{ title | Новый проект }}" />
+<meta property="og:description" content="{{ description | Описание проекта }}" />
+<meta name="theme-color" content="#3b5bff" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<!--
+  Два крошечных скрипта ДО отрисовки страницы:
+  1) класс .js — CSS прячет элементы до анимации появления только при включённом JS;
+  2) сохранённая тема — без «вспышки» светлой темы при тёмной (kit/js/modules/theme-switch).
+-->
+<script>
+  document.documentElement.classList.add('js')
+  try {
+    var t = JSON.parse(localStorage.getItem('theme'))
+    if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t
+  } catch (e) {}
+</script>
+<script type="module" src="/src/main.js"></script>

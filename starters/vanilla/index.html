@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <include
+      src="head.html"
+      title="Новый проект — главная"
+      description="Стартовая страница проекта на frontend-kit"
+    ></include>
+  </head>
+  <body>
+    <include src="header.html"></include>
+
+    <!-- data-module="reveal" на <main>: все [data-reveal] внутри появляются при прокрутке -->
+    <main id="main" data-module="reveal">
+      <!-- ═══ Первый экран ═══════════════════════════════════════════════ -->
+      <section class="hero">
+        <div class="container hero__inner">
+          <p class="hero__eyebrow" data-reveal="fade">Шаблон проекта</p>
+          <h1 class="hero__title" data-module="split-text">Вёрстка, которая не ломается на проде</h1>
+          <p class="lead hero__lead" data-reveal>
+            Модули, стили и инструменты, собранные из реальных проектов. Замените тексты — и можно показывать заказчику.
+          </p>
+          <div class="cluster">
+            <button class="btn btn--lg" data-dialog-open="callback" data-module="magnetic" data-reveal>
+              Обсудить проект
+            </button>
+            <a class="btn btn--lg btn--secondary" href="/ui-kit.html" data-reveal>Посмотреть UI-кит</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ Бегущая строка ═════════════════════════════════════════════ -->
+      <div class="marquee section-marquee" data-module="marquee" data-marquee-speed="50" aria-label="Технологии">
+        <ul class="marquee__track" data-marquee-track>
+          <li>Vite</li>
+          <li>SCSS</li>
+          <li>GSAP</li>
+          <li>Lenis</li>
+          <li>React</li>
+          <li>Vitest</li>
+          <li>a11y</li>
+        </ul>
+      </div>
+
+      <!-- ═══ Возможности ════════════════════════════════════════════════ -->
+      <section class="section" id="features">
+        <div class="container stack" style="--gap: 40px">
+          <h2 data-reveal>Что внутри</h2>
+          <ul class="auto-grid features" style="--min: 220px">
+            <li class="card" data-reveal>
+              <h3 class="h4">17 модулей</h3>
+              <p class="muted">Аккордеон, табы, модалка, слайдер, формы с маской, появление при скролле.</p>
+            </li>
+            <li class="card" data-reveal>
+              <h3 class="h4">SCSS-система</h3>
+              <p class="muted">Токены, плавная типографика, миксины брейкпоинтов, тёмная тема.</p>
+            </li>
+            <li class="card" data-reveal>
+              <h3 class="h4">Dev-панель</h3>
+              <p class="muted">Сетка, макет поверх вёрстки, поиск переполнения и ошибок доступности.</p>
+            </li>
+            <li class="card" data-reveal>
+              <h3 class="h4">Тесты</h3>
+              <p class="muted">Каждый модуль покрыт тестами — правки не ломают соседей.</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ═══ Цифры ═════════════════════════════════════════════════════ -->
+      <section class="section stats">
+        <div class="container auto-grid" style="--min: 200px">
+          <p class="stat"><span class="stat__value counter" data-module="counter">17</span> модулей</p>
+          <p class="stat">
+            <span class="stat__value counter" data-module="counter" data-counter-suffix="+">100</span> тестов
+          </p>
+          <p class="stat">
+            <span class="stat__value counter" data-module="counter" data-counter-suffix="%">100</span> вёрстки по БЭМ
+          </p>
+        </div>
+      </section>
+
+      <!-- ═══ Слайдер ═══════════════════════════════════════════════════ -->
+      <section class="section">
+        <div class="container stack" style="--gap: 32px">
+          <h2 data-reveal>Кейсы</h2>
+          <div class="slider cases" data-module="slider" aria-label="Кейсы">
+            <div class="slider__track" data-slider-track>
+              <article class="slider__slide case">
+                <h3 class="h4">Сайт университета</h3>
+                <p class="muted">Многостраничная вёрстка, 60+ блоков</p>
+              </article>
+              <article class="slider__slide case">
+                <h3 class="h4">Промо-лендинг</h3>
+                <p class="muted">WebGL, анимации на скролле</p>
+              </article>
+              <article class="slider__slide case">
+                <h3 class="h4">Личный кабинет</h3>
+                <p class="muted">Формы, таблицы, фильтры</p>
+              </article>
+              <article class="slider__slide case">
+                <h3 class="h4">Дашборд</h3>
+                <p class="muted">React, графики, виртуализация</p>
+              </article>
+            </div>
+            <div class="slider__nav">
+              <button class="slider__arrow" data-slider-prev aria-label="Назад">←</button>
+              <div class="slider__dots" data-slider-dots></div>
+              <button class="slider__arrow" data-slider-next aria-label="Вперёд">→</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ FAQ ═══════════════════════════════════════════════════════ -->
+      <section class="section" id="faq">
+        <div class="container stack" style="--gap: 32px; max-width: 860px">
+          <h2 data-reveal>Вопросы</h2>
+          <div class="accordion" data-module="accordion">
+            <div class="accordion__item" data-accordion-item data-open>
+              <h3 class="h4">
+                <button class="accordion__trigger" data-accordion-trigger>Как начать новый проект?</button>
+              </h3>
+              <div class="accordion__panel" data-accordion-panel>
+                <div class="accordion__inner"><p>npm run create -- ../my-site — и выберите стек.</p></div>
+              </div>
+            </div>
+            <div class="accordion__item" data-accordion-item>
+              <h3 class="h4">
+                <button class="accordion__trigger" data-accordion-trigger>Попадут ли dev-инструменты на прод?</button>
+              </h3>
+              <div class="accordion__panel" data-accordion-panel>
+                <div class="accordion__inner">
+                  <p>Нет: они отрезаются при сборке, а если нет — сборка остановится с ошибкой.</p>
+                </div>
+              </div>
+            </div>
+            <div class="accordion__item" data-accordion-item>
+              <h3 class="h4">
+                <button class="accordion__trigger" data-accordion-trigger>Где описаны частые баги?</button>
+              </h3>
+              <div class="accordion__panel" data-accordion-panel>
+                <div class="accordion__inner"><p>В docs/troubleshooting.md — симптом, причина, решение.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <include src="footer.html"></include>
+  </body>
+</html>

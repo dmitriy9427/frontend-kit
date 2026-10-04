@@ -1,0 +1,33 @@
+---
+/**
+ * Модалка с формой. Открывается кнопкой data-dialog-open="callback",
+ * ссылкой #callback или адресом страницы с #callback.
+ * Правила полей — схема «callback» (src/forms/schemas.ts), тексты ошибок —
+ * на языке страницы (словари кита ru/en).
+ */
+import { useTranslations } from '../i18n/ui'
+const t = useTranslations(Astro.currentLocale)
+---
+
+<dialog id="callback" class="dialog" data-module="dialog" aria-labelledby="callback-title">
+  <div class="dialog__box">
+    <button class="dialog__close" data-dialog-close aria-label="×">×</button>
+    <h2 id="callback-title" class="h3">{t('form.title')}</h2>
+    <form class="stack form" data-module="form" data-form-ajax data-form-schema="callback" action="/api/callback" method="post" novalidate>
+      <label class="field">
+        <span class="field__label">{t('form.name')}</span>
+        <input class="field__input" name="name" autocomplete="name" />
+      </label>
+      <label class="field">
+        <span class="field__label">{t('form.phone')}</span>
+        <input class="field__input" name="phone" type="tel" data-mask="phone" autocomplete="tel" />
+      </label>
+      <label class="checkbox field">
+        <input type="checkbox" name="consent" />
+        <span>{t('form.consent')}</span>
+      </label>
+      <button class="btn" type="submit">{t('form.submit')}</button>
+      <p data-form-status role="status"></p>
+    </form>
+  </div>
+</dialog>

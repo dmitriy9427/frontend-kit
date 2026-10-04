@@ -1,0 +1,80 @@
+// Секции главной страницы и UI-кита.
+@use 'abstracts' as *;
+
+.section-marquee {
+  padding-block: space(6);
+  font-size: fluid(24px, 48px);
+  font-weight: 700;
+  border-block: 1px solid var(--color-border);
+
+  ul {
+    @include reset-list;
+  }
+}
+
+.features {
+  padding: 0;
+}
+
+.stat {
+  color: var(--color-muted);
+}
+
+.stat__value {
+  display: block;
+  font-size: fluid(40px, 72px);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-text);
+}
+
+.cases {
+  --slide-width: 85%;
+
+  @include up('md') {
+    --slide-width: calc((100% - var(--slide-gap)) / 2);
+  }
+
+  @include up('lg') {
+    --slide-width: calc((100% - 2 * var(--slide-gap)) / 3);
+  }
+}
+
+.case {
+  display: grid;
+  gap: space(2);
+  align-content: end;
+  min-height: rem(280px);
+  padding: space(6);
+  background: linear-gradient(
+    160deg,
+    var(--color-surface),
+    color-mix(in srgb, var(--color-accent) 18%, var(--color-surface))
+  );
+  border-radius: radius('lg');
+}
+
+.uikit__parallax {
+  height: rem(320px);
+  border-radius: radius('lg');
+}
+
+.not-found {
+  min-height: 60svh;
+  place-content: center;
+}
+
+// Форма UI-кита: две колонки на широком экране.
+.form-grid {
+  display: grid;
+  gap: space(5) space(6);
+  max-width: rem(860px);
+
+  @include up('md') {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.form-grid__wide {
+  grid-column: 1 / -1;
+}

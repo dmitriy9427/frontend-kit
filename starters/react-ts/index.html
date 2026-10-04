@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Новый проект</title>
+    <meta name="description" content="Стартовая страница React-проекта на frontend-kit" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- Тема до отрисовки — без «вспышки» (kit/js/modules/theme-switch). -->
+    <script>
+      document.documentElement.classList.add('js')
+      try {
+        var t = JSON.parse(localStorage.getItem('theme'))
+        if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

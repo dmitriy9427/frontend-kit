@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <include src="head.html" title="UI-кит" description="Все компоненты проекта на одной странице"></include>
+  </head>
+  <body>
+    <include src="header.html"></include>
+    <!--
+      UI-кит — «живой» каталог компонентов проекта. Зачем:
+      - показать заказчику все состояния кнопок/полей до сборки страниц;
+      - проверять компонент в одном месте после правок (светлая и тёмная тема,
+        мобилка — через dev-панель);
+      - копировать готовую разметку.
+      Добавили компонент в проект — добавьте его сюда.
+    -->
+    <main id="main" class="container section stack uikit" style="--gap: 64px">
+      <h1>UI-кит</h1>
+
+      <section class="stack">
+        <h2 class="h3">Типографика</h2>
+        <p class="h1">Заголовок H1</p>
+        <p class="h2">Заголовок H2</p>
+        <p class="h3">Заголовок H3</p>
+        <p class="lead">Лид-абзац: крупнее и спокойнее обычного текста.</p>
+        <div class="prose">
+          <p>
+            Обычный текст. <a href="#">Ссылка в тексте</a>. Блок <code>.prose</code> сам расставляет отступы в статьях
+            из CMS.
+          </p>
+          <ul>
+            <li>Пункт списка</li>
+            <li>Ещё пункт</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Кнопки</h2>
+        <div class="cluster">
+          <button class="btn">Основная</button>
+          <button class="btn btn--secondary">Вторичная</button>
+          <button class="btn btn--ghost">Контурная</button>
+          <button class="btn" disabled>Неактивная</button>
+          <button class="btn" aria-busy="true">Загрузка</button>
+        </div>
+        <div class="cluster">
+          <button class="btn btn--sm">Маленькая</button>
+          <button class="btn btn--lg" data-module="magnetic">Магнитная</button>
+        </div>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Форма: все поля, маски и схема</h2>
+        <p class="muted">
+          Правила — схема «uikit» в src/forms/schemas.js. Ошибки появляются после ухода с поля, а после попытки отправки
+          — на каждый ввод. Попробуйте e-mail <code>taken@mail.ru</code> — увидите ошибку «с сервера» под полем.
+        </p>
+        <form
+          class="form-grid"
+          data-module="form"
+          data-form-ajax
+          data-form-schema="uikit"
+          action="/api/uikit"
+          method="post"
+          novalidate
+        >
+          <label class="field">
+            <span class="field__label">E-mail</span>
+            <input class="field__input" type="email" name="email" autocomplete="email" />
+          </label>
+          <label class="field">
+            <span class="field__label">Телефон</span>
+            <input class="field__input" type="tel" name="phone" data-mask="phone" autocomplete="tel" />
+          </label>
+          <label class="field">
+            <span class="field__label">Дата рождения</span>
+            <input class="field__input" name="birthday" data-mask="date" placeholder="ДД.ММ.ГГГГ" />
+            <span class="field__hint">Маска date, проверка возраста 18+</span>
+          </label>
+          <label class="field">
+            <span class="field__label">Бюджет, ₽</span>
+            <input class="field__input" name="amount" data-mask="number" />
+            <span class="field__hint">Маска number: разряды пробелами</span>
+          </label>
+          <label class="field">
+            <span class="field__label">ИНН (необязательно)</span>
+            <input class="field__input" name="inn" data-mask="inn" />
+            <span class="field__hint">Проверяется контрольная цифра: 7707083893 — верный</span>
+          </label>
+          <label class="field">
+            <span class="field__label">СНИЛС (необязательно)</span>
+            <input class="field__input" name="snils" data-mask="snils" />
+          </label>
+          <div class="field">
+            <label class="field__label" for="uikit-password">Пароль</label>
+            <div class="field__control" data-module="password">
+              <input
+                class="field__input"
+                id="uikit-password"
+                type="password"
+                name="password"
+                autocomplete="new-password"
+              />
+              <button class="field__action" type="button" data-password-toggle></button>
+            </div>
+            <span class="field__hint">Минимум 8 символов и цифра</span>
+          </div>
+          <label class="field">
+            <span class="field__label">Пароль ещё раз</span>
+            <input class="field__input" type="password" name="confirm" autocomplete="new-password" />
+          </label>
+          <label class="field">
+            <span class="field__label">Тема</span>
+            <select class="field__input" name="topic" data-module="select">
+              <option value="">Выберите тему</option>
+              <option value="site">Сайт</option>
+              <option value="support">Поддержка</option>
+              <option value="other">Другое</option>
+            </select>
+            <span class="field__hint">Кастомный селект: клавиатура, буквы для перехода</span>
+          </label>
+          <label class="field">
+            <span class="field__label">Город</span>
+            <select class="field__input" name="city" data-module="select" data-select-search data-select-clearable>
+              <option value="">Начните вводить город</option>
+              <optgroup label="Центр">
+                <option value="msk">Москва</option>
+                <option value="tula">Тула</option>
+                <option value="tver">Тверь</option>
+              </optgroup>
+              <optgroup label="Северо-Запад">
+                <option value="spb">Санкт-Петербург</option>
+                <option value="pskov">Псков</option>
+              </optgroup>
+              <optgroup label="Урал и Сибирь">
+                <option value="ekb">Екатеринбург</option>
+                <option value="tomsk">Томск</option>
+                <option value="ugra">Ханты-Мансийск</option>
+              </optgroup>
+            </select>
+            <span class="field__hint">С поиском (ё = е) и группами</span>
+          </label>
+          <label class="field form-grid__wide">
+            <span class="field__label">Технологии (до 4)</span>
+            <select
+              class="field__input"
+              name="stack[]"
+              multiple
+              data-module="select"
+              data-select-search
+              data-select-max="4"
+            >
+              <option value="">Выберите технологии</option>
+              <option>HTML</option>
+              <option>SCSS</option>
+              <option>JavaScript</option>
+              <option>TypeScript</option>
+              <option>React</option>
+              <option>Astro</option>
+              <option>GSAP</option>
+              <option>Three.js</option>
+              <option>Swiper</option>
+              <option>Vite</option>
+            </select>
+            <span class="field__hint">Несколько значений — «чипсы», Backspace убирает последний</span>
+          </label>
+          <div class="field">
+            <span class="field__label" id="qty-label">Количество страниц</span>
+            <div class="stepper" data-module="stepper" role="group" aria-labelledby="qty-label">
+              <button type="button" data-stepper-dec aria-label="Меньше">−</button>
+              <input type="number" name="qty" value="1" min="1" max="10" aria-labelledby="qty-label" />
+              <button type="button" data-stepper-inc aria-label="Больше">+</button>
+            </div>
+          </div>
+          <fieldset class="choice-group" data-field>
+            <legend>Как связаться</legend>
+            <label class="choice"><input type="radio" name="contact" value="phone" /> Позвонить</label>
+            <label class="choice"><input type="radio" name="contact" value="email" /> Написать на e-mail</label>
+          </fieldset>
+          <fieldset class="choice-group" data-field>
+            <legend>Услуги</legend>
+            <label class="choice"><input type="checkbox" name="services[]" value="design" /> Дизайн</label>
+            <label class="choice"><input type="checkbox" name="services[]" value="dev" /> Вёрстка</label>
+            <label class="choice"><input type="checkbox" name="services[]" value="seo" /> SEO</label>
+          </fieldset>
+          <label class="field form-grid__wide">
+            <span class="field__label">Сообщение</span>
+            <textarea
+              class="field__input"
+              name="message"
+              rows="3"
+              maxlength="500"
+              data-module="autosize char-counter"
+            ></textarea>
+          </label>
+          <div
+            class="upload form-grid__wide"
+            data-module="file-upload"
+            data-file-upload-max-files="3"
+            data-file-upload-max-size="5"
+            data-field
+          >
+            <span class="field__label">Файлы (необязательно)</span>
+            <input class="upload__input" type="file" name="files" id="uikit-files" multiple accept="image/*,.pdf" />
+            <label class="upload__zone" for="uikit-files">
+              <span>Перетащите файлы сюда или <u>выберите</u></span>
+              <small data-file-upload-hint></small>
+            </label>
+            <ul class="upload__list" data-file-upload-list></ul>
+          </div>
+          <div class="form-grid__wide">
+            <include src="consent.html"></include>
+          </div>
+          <div class="cluster form-grid__wide">
+            <button class="btn" type="submit">Отправить</button>
+            <button class="btn btn--secondary" type="reset">Сбросить</button>
+          </div>
+          <p class="form-grid__wide" data-form-status role="status"></p>
+        </form>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Табы</h2>
+        <p class="muted">Открытая вкладка хранится в адресе (?uikit-tabs=…) — перезагрузите страницу.</p>
+        <div class="tabs" data-module="tabs" id="uikit-tabs">
+          <div class="tabs__list" data-tabs-list>
+            <button class="tabs__tab" data-tabs-tab>Описание</button>
+            <button class="tabs__tab" data-tabs-tab>Характеристики</button>
+            <button class="tabs__tab" data-tabs-tab>Отзывы</button>
+          </div>
+          <div class="tabs__panel" data-tabs-panel id="about">
+            <p>Первая вкладка. Стрелки ← → переключают вкладки.</p>
+          </div>
+          <div class="tabs__panel" data-tabs-panel id="specs"><p>Вторая вкладка.</p></div>
+          <div class="tabs__panel" data-tabs-panel id="reviews"><p>Третья вкладка.</p></div>
+        </div>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Аккордеон (несколько открытых)</h2>
+        <div class="accordion" data-module="accordion" data-accordion-multiple>
+          <div class="accordion__item" data-accordion-item>
+            <h3 class="h4"><button class="accordion__trigger" data-accordion-trigger>Первый</button></h3>
+            <div class="accordion__panel" data-accordion-panel>
+              <div class="accordion__inner"><p>Текст</p></div>
+            </div>
+          </div>
+          <div class="accordion__item" data-accordion-item>
+            <h3 class="h4"><button class="accordion__trigger" data-accordion-trigger>Второй</button></h3>
+            <div class="accordion__panel" data-accordion-panel>
+              <div class="accordion__inner"><p>Текст</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Модалка и уведомления</h2>
+        <div class="cluster" data-module="toast">
+          <button class="btn btn--secondary" data-dialog-open="callback">Модалка (кнопкой)</button>
+          <a class="btn btn--secondary" href="#callback">Модалка (ссылкой #callback)</a>
+          <button class="btn btn--secondary" data-toast="Сохранено" data-toast-type="success">Тост: успех</button>
+          <button class="btn btn--secondary" data-toast="Что-то пошло не так" data-toast-type="error">
+            Тост: ошибка
+          </button>
+        </div>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Слайдер с автопрокруткой</h2>
+        <div
+          class="slider"
+          data-module="slider"
+          data-slider-autoplay="3000"
+          style="--slide-width: 280px"
+          aria-label="Пример"
+        >
+          <div class="slider__track" data-slider-track>
+            <div class="slider__slide card">1</div>
+            <div class="slider__slide card">2</div>
+            <div class="slider__slide card">3</div>
+            <div class="slider__slide card">4</div>
+            <div class="slider__slide card">5</div>
+            <div class="slider__slide card">6</div>
+          </div>
+          <div class="slider__nav">
+            <button class="slider__arrow" data-slider-prev aria-label="Назад">←</button>
+            <div class="slider__dots" data-slider-dots></div>
+            <button class="slider__arrow" data-slider-next aria-label="Вперёд">→</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Параллакс</h2>
+        <div class="uikit__parallax" data-module="parallax" data-parallax-speed="0.25">
+          <img src="https://picsum.photos/seed/kit/1200/600" alt="" width="1200" height="600" loading="lazy" />
+        </div>
+      </section>
+    </main>
+    <include src="footer.html"></include>
+  </body>
+</html>

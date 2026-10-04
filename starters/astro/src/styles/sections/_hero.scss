@@ -1,0 +1,33 @@
+// Первый экран.
+@use 'abstracts' as *;
+
+.hero {
+  display: grid;
+  align-items: center;
+  // svh, а не vh: на телефоне 100vh больше видимой области (адресная строка).
+  min-height: calc(100svh - var(--header-height));
+  padding-block: space(12);
+}
+
+.hero__inner {
+  display: grid;
+  gap: space(6);
+  justify-items: start;
+}
+
+.hero__eyebrow {
+  font-family: var(--font-mono);
+  font-size: rem(14px);
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.hero__title {
+  max-width: 16ch;
+  font-size: fluid(40px, 96px);
+}
+
+.hero__lead {
+  max-width: 50ch;
+}

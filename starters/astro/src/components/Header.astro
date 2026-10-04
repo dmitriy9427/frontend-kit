@@ -1,0 +1,51 @@
+---
+/**
+ * Шапка: меню, переключатель языка (ссылки на ту же страницу на другом
+ * языке — так их видят поисковики), тема, кнопка модалки, бургер.
+ */
+import { LOCALES, localePath, stripLocale, useTranslations, type Locale } from '../i18n/ui'
+
+const locale = (Astro.currentLocale ?? 'ru') as Locale
+const t = useTranslations(locale)
+const path = stripLocale(Astro.url.pathname)
+const home = localePath(locale, '/')
+const links = [
+  { href: home, label: t('nav.home') },
+  { href: `${home}#features`, label: t('nav.features') },
+  { href: `${home}#faq`, label: t('nav.faq') },
+]
+const isCurrent = (href: string) => href === Astro.url.pathname
+---
+
+<header class="header" data-module="sticky-header">
+  <div class="header__inner">
+    <a class="logo" href={home}>Logo</a>
+    <nav id="site-menu" class="nav mobile-menu" aria-label="Menu" data-lenis-prevent>
+      <ul class="nav__list">
+        {
+          links.map(({ href, label }) => (
+            <li>
+              <a class="nav__link" href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
+                {label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="header__actions">
+      <nav class="lang-switch" data-module="lang-switch" aria-label="Language">
+        {
+          LOCALES.map((l) => (
+            <a href={localePath(l, path)} hreflang={l} lang={l}>
+              {l.toUpperCase()}
+            </a>
+          ))
+        }
+      </nav>
+      <button class="theme-switch" data-module="theme-switch" aria-label="Theme"></button>
+      <button class="btn btn--sm header__cta" data-dialog-open="callback">{t('nav.contact')}</button>
+      <button class="burger" data-module="menu" data-menu-target="site-menu"><span class="burger__lines"></span></button>
+    </div>
+  </div>
+</header>

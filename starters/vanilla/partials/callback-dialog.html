@@ -1,0 +1,36 @@
+<!--
+  Модалка «Связаться». Открывается:
+    - кнопкой с data-dialog-open="callback";
+    - ссылкой <a href="#callback">;
+    - адресом страницы с #callback (ссылку можно отправить клиенту).
+  Правила полей — схема «callback» в src/forms/schemas.js.
+  Форма отправляется на /api/callback — в dev отвечает мок (mocks/callback.js).
+-->
+<dialog id="callback" class="dialog" data-module="dialog" aria-labelledby="callback-title">
+  <div class="dialog__box">
+    <button class="dialog__close" data-dialog-close aria-label="Закрыть">×</button>
+    <h2 id="callback-title" class="h3">Обсудим проект?</h2>
+    <p class="muted">Оставьте телефон — перезвоним в течение часа.</p>
+    <form
+      class="stack form"
+      data-module="form"
+      data-form-ajax
+      data-form-schema="callback"
+      action="/api/callback"
+      method="post"
+      novalidate
+    >
+      <label class="field">
+        <span class="field__label">Имя</span>
+        <input class="field__input" name="name" autocomplete="name" required minlength="2" />
+      </label>
+      <label class="field">
+        <span class="field__label">Телефон</span>
+        <input class="field__input" name="phone" type="tel" autocomplete="tel" data-mask="phone" required />
+      </label>
+      <include src="consent.html"></include>
+      <button class="btn" type="submit">Отправить</button>
+      <p data-form-status role="status"></p>
+    </form>
+  </div>
+</dialog>

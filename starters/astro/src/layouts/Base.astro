@@ -1,0 +1,67 @@
+---
+/**
+ * Общий каркас страницы: <head> (SEO, hreflang, Open Graph), шапка, подвал,
+ * модалка, запуск модулей кита.
+ *
+ *   <Base title="…" description="…"> …содержимое… </Base>
+ */
+import '../styles/main.scss'
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+import CallbackDialog from '../components/CallbackDialog.astro'
+import { LOCALES, localePath, stripLocale, useTranslations, type Locale } from '../i18n/ui'
+
+interface Props {
+  title?: string
+  description?: string
+  /** Картинка для соцсетей (1200×630), путь от корня сайта. */
+  image?: string
+}
+
+const locale = (Astro.currentLocale ?? 'ru') as Locale
+const t = useTranslations(locale)
+const { title = t('meta.title'), description = t('meta.description'), image = '/og.jpg' } = Astro.props
+const path = stripLocale(Astro.url.pathname)
+const canonical = new URL(Astro.url.pathname, Astro.site)
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {/* hreflang: поисковик понимает, что /about и /en/about — одна страница на разных языках */}
+    {LOCALES.map((l) => <link rel="alternate" hreflang={l} href={new URL(localePath(l, path), Astro.site)} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(localePath('ru', path), Astro.site)} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta property="og:locale" content={locale === 'ru' ? 'ru_RU' : 'en_US'} />
+    <meta name="theme-color" content="#3b5bff" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {/* До отрисовки: класс .js (анимации появления) и сохранённая тема — без «вспышки». */}
+    <script is:inline>
+      document.documentElement.classList.add('js')
+      try {
+        var t = JSON.parse(localStorage.getItem('theme'))
+        if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t('skip')}</a>
+    <Header />
+    <main id="main" data-module="reveal">
+      <slot />
+    </main>
+    <Footer />
+    <CallbackDialog />
+    <script>
+      import '../scripts/app'
+    </script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+// Главный файл стилей Astro-проекта (подключён в layouts/Base.astro).
+// ПОРЯДОК ВАЖЕН: сначала настройки, потом CSS кита, потом стили проекта.
+@use 'abstracts';
+@use 'kit/scss';
+
+@use 'layout';
+@use 'sections/hero';
+@use 'sections/home';
+
+// Переключатель языка в шапке.
+.lang-switch {
+  display: flex;
+  gap: 4px;
+  font-size: 14px;
+
+  a {
+    padding: 4px 6px;
+    color: var(--color-muted);
+    text-decoration: none;
+    border-radius: 6px;
+
+    &[aria-current] {
+      color: var(--color-text);
+      background: var(--color-surface);
+    }
+  }
+}

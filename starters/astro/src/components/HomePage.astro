@@ -1,0 +1,59 @@
+---
+/**
+ * Главная — общая для всех языков. Страницы pages/index.astro и
+ * pages/en/index.astro только подключают её: разметка одна, тексты — из словаря.
+ */
+import { useTranslations } from '../i18n/ui'
+const t = useTranslations(Astro.currentLocale)
+---
+
+<section class="hero">
+  <div class="container hero__inner">
+    <p class="hero__eyebrow" data-reveal="fade">{t('hero.eyebrow')}</p>
+    <h1 class="hero__title" data-module="split-text">{t('hero.title')}</h1>
+    <p class="lead hero__lead" data-reveal>{t('hero.lead')}</p>
+    <div class="cluster">
+      <a class="btn btn--lg" href="#callback" data-module="magnetic" data-reveal>{t('hero.cta')}</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="container stack" style="--gap: 40px">
+    <h2 data-reveal>{t('features.title')}</h2>
+    <ul class="auto-grid features" style="--min: 240px">
+      {
+        t('features.items').map(([title, text]) => (
+          <li class="card" data-reveal>
+            <h3 class="h4">{title}</h3>
+            <p class="muted">{text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="container stack" style="--gap: 32px; max-width: 860px">
+    <h2 data-reveal>{t('faq.title')}</h2>
+    <div class="accordion" data-module="accordion">
+      {
+        t('faq.items').map(([q, a], i) => (
+          <div class="accordion__item" data-accordion-item data-open={i === 0 ? '' : undefined}>
+            <h3 class="h4">
+              <button class="accordion__trigger" data-accordion-trigger>
+                {q}
+              </button>
+            </h3>
+            <div class="accordion__panel" data-accordion-panel>
+              <div class="accordion__inner">
+                <p>{a}</p>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

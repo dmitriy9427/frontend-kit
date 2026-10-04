@@ -1,0 +1,26 @@
+{
+  // Проверка типов JS-кода по JSDoc-комментариям (TypeScript без перевода на .ts).
+  // Редактор подсказывает опции модулей и ловит ошибки типов; npm run typecheck —
+  // проверка всего проекта. Код при этом остаётся обычным JS — сборка не меняется.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": ["vite/client", "node"],
+    "paths": {
+      "kit/*": ["./kit/*"],
+      "@test/*": ["./test/*"]
+    }
+  },
+  "include": ["kit/**/*", "kit/types/*.d.ts", "starters/*/src/**/*", "scripts/**/*", "test/**/*", "*.config.js"],
+  "exclude": ["**/node_modules", "**/dist", "starters/react-ts", "**/*.test.js", "**/*.test.jsx", "test/**"]
+}

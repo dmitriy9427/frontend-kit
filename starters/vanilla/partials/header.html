@@ -1,0 +1,26 @@
+<!--
+  Шапка. Активный пункт меню подсвечивается сам: плагин html-include ставит
+  aria-current="page" ссылке на текущую страницу.
+-->
+<a class="skip-link" href="#main">Перейти к содержимому</a>
+<header class="header" data-module="sticky-header">
+  <div class="header__inner">
+    <a class="logo" href="/">Логотип</a>
+    <nav id="site-menu" class="nav mobile-menu" aria-label="Основное меню" data-lenis-prevent>
+      <ul class="nav__list">
+        <li><a class="nav__link" href="/">Главная</a></li>
+        <li><a class="nav__link" href="/#features">Возможности</a></li>
+        <li><a class="nav__link" href="/#faq">Вопросы</a></li>
+        <li><a class="nav__link" href="/ui-kit.html">UI-кит</a></li>
+        <li><a class="nav__link" href="/effects.html">Эффекты</a></li>
+      </ul>
+    </nav>
+    <div class="header__actions">
+      <button class="theme-switch" data-module="theme-switch" aria-label="Тёмная тема"></button>
+      <button class="btn btn--sm header__cta" data-dialog-open="callback">Связаться</button>
+      <button class="burger" data-module="menu" data-menu-target="site-menu" aria-label="Открыть меню">
+        <span class="burger__lines"></span>
+      </button>
+    </div>
+  </div>
+</header>

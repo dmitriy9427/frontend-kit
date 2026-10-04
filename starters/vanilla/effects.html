@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <include
+      src="head.html"
+      title="Эффекты"
+      description="Swiper, бесконечные слайдеры, галерея и эффекты на GSAP"
+    ></include>
+  </head>
+  <body>
+    <include src="header.html"></include>
+    <div class="scroll-progress" data-module="scroll-progress"></div>
+    <div class="cursor" data-module="cursor"></div>
+    <!--
+      Витрина модулей-эффектов. Картинки — с picsum.photos (для примера);
+      в проекте кладите свои в public/ или src/assets/.
+    -->
+    <main id="main" data-module="reveal">
+      <section class="section container stack" style="--gap: 24px">
+        <h1 data-module="scramble-text">Эффекты</h1>
+        <p class="lead" data-reveal>
+          Swiper с пресетами, бесконечные ленты и галерея, горизонтальный скролл, Flip-фильтр, стопка карточек, свой
+          курсор.
+        </p>
+        <svg class="demo-line" viewBox="0 0 600 40" data-module="draw-svg" aria-hidden="true">
+          <path d="M2 30 C 150 0, 250 40, 400 15 S 560 10, 598 25" data-draw />
+        </svg>
+      </section>
+
+      <section class="section container stack" style="--gap: 24px">
+        <div class="demo-head">
+          <h2>Swiper: лента</h2>
+          <!-- Стрелки вне слайдера — модуль найдёт их в секции сам -->
+          <div class="swiper-nav">
+            <button class="swiper-button-prev" aria-label="Назад"></button
+            ><button class="swiper-button-next" aria-label="Вперёд"></button>
+          </div>
+        </div>
+        <div class="swiper" data-module="swiper">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+              <img
+                src="https://picsum.photos/seed/sw1/900/600"
+                alt="Пример 1"
+                width="900"
+                height="600"
+                loading="lazy"
+              />
+            </div>
+            <div class="swiper-slide">
+              <img
+                src="https://picsum.photos/seed/sw2/900/600"
+                alt="Пример 2"
+                width="900"
+                height="600"
+                loading="lazy"
+              />
+            </div>
+            <div class="swiper-slide">
+              <img
+                src="https://picsum.photos/seed/sw3/900/600"
+                alt="Пример 3"
+                width="900"
+                height="600"
+                loading="lazy"
+              />
+            </div>
+            <div class="swiper-slide">
+              <img
+                src="https://picsum.photos/seed/sw4/900/600"
+                alt="Пример 4"
+                width="900"
+                height="600"
+                loading="lazy"
+              />
+            </div>
+            <div class="swiper-slide">
+              <img
+                src="https://picsum.photos/seed/sw5/900/600"
+                alt="Пример 5"
+                width="900"
+                height="600"
+                loading="lazy"
+              />
+            </div>
+            <div class="swiper-slide">
+              <img
+                src="https://picsum.photos/seed/sw6/900/600"
+                alt="Пример 6"
+                width="900"
+                height="600"
+                loading="lazy"
+              />
+            </div>
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </section>
+
+      <section class="section container stack" style="--gap: 24px">
+        <h2>Swiper: пресеты fade, cards, coverflow</h2>
+        <div class="demo-grid">
+          <div class="swiper demo-fade" data-module="swiper" data-swiper-preset="fade">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide">
+                <img
+                  src="https://picsum.photos/seed/sw1/900/600"
+                  alt="Пример 1"
+                  width="900"
+                  height="600"
+                  loading="lazy"
+                />
+              </div>
+              <div class="swiper-slide">
+                <img
+                  src="https://picsum.photos/seed/sw2/900/600"
+                  alt="Пример 2"
+                  width="900"
+                  height="600"
+                  loading="lazy"
+                />
+              </div>
+              <div class="swiper-slide">
+                <img
+                  src="https://picsum.photos/seed/sw3/900/600"
+                  alt="Пример 3"
+                  width="900"
+                  height="600"
+                  loading="lazy"
+                />
+              </div>
+              <div class="swiper-slide">
+                <img
+                  src="https://picsum.photos/seed/sw4/900/600"
+                  alt="Пример 4"
+                  width="900"
+                  height="600"
+                  loading="lazy"
+                />
+              </div>
+              <div class="swiper-slide">
+                <img
+                  src="https://picsum.photos/seed/sw5/900/600"
+                  alt="Пример 5"
+                  width="900"
+                  height="600"
+                  loading="lazy"
+                />
+              </div>
+              <div class="swiper-slide">
+                <img
+                  src="https://picsum.photos/seed/sw6/900/600"
+                  alt="Пример 6"
+                  width="900"
+                  height="600"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+            <div class="swiper-pagination"></div>
+          </div>
+          <div class="swiper" data-module="swiper" data-swiper-preset="cards">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide demo-card">Карточка 1</div>
+              <div class="swiper-slide demo-card">Карточка 2</div>
+              <div class="swiper-slide demo-card">Карточка 3</div>
+              <div class="swiper-slide demo-card">Карточка 4</div>
+              <div class="swiper-slide demo-card">Карточка 5</div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper" data-module="swiper" data-swiper-preset="coverflow">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+              <img
+                src="https://picsum.photos/seed/sw1/900/600"
+                alt="Пример 1"
+                width="900"
+                height="600"
+                loading="lazy"
+              />
+            </div>
+            <div class="swiper-slide">
+              <img
+                src="https://picsum.photos/seed/sw2/900/600"
+                alt="Пример 2"
+                width="900"
+                height="600"
+                loading="lazy"
+              />
+            </div>
+            <div class="swiper-slide">
+              <img
+                src="https://picsum.photos/seed/sw3/900/600"
+                alt="Пример 3"
+                width="900"
+                height="600"
+                loading="lazy"
+              />
+            </div>
+            <div class="swiper-slide">
+              <img
+                src="https://picsum.photos/seed/sw4/900/600"
+                alt="Пример 4"
+                width="900"
+                height="600"
+                loading="lazy"
+              />
+            </div>
+            <div class="swiper-slide">
+              <img
+                src="https://picsum.photos/seed/sw5/900/600"
+                alt="Пример 5"
+                width="900"
+                height="600"
+                loading="lazy"
+              />
+            </div>
+            <div class="swiper-slide">
+              <img
+                src="https://picsum.photos/seed/sw6/900/600"
+                alt="Пример 6"
+                width="900"
+                height="600"
+                loading="lazy"
+              />
+            </div>
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </section>
+
+      <section class="section container stack" style="--gap: 24px">
+        <h2>Бесконечная лента</h2>
+        <div class="infinite" data-module="infinite-slider" data-cursor="Тянуть">
+          <div class="infinite__viewport" data-infinite-viewport>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 1">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf1/600/800" alt="Кадр 1" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 2">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf2/600/800" alt="Кадр 2" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 3">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf3/600/800" alt="Кадр 3" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 4">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf4/600/800" alt="Кадр 4" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 5">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf5/600/800" alt="Кадр 5" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 6">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf6/600/800" alt="Кадр 6" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 7">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf7/600/800" alt="Кадр 7" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 8">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf8/600/800" alt="Кадр 8" crossorigin="anonymous" />
+              </div>
+            </figure>
+          </div>
+          <div class="cluster demo-controls">
+            <button class="btn btn--secondary btn--sm" data-infinite-prev>←</button>
+            <p class="infinite__title" data-infinite-title></p>
+            <p class="infinite__counter" data-infinite-counter></p>
+            <button class="btn btn--secondary btn--sm" data-infinite-next>→</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section container stack" style="--gap: 24px">
+        <h2>3D-барабан (WebGL)</h2>
+        <div class="infinite" data-module="infinite-slider" data-infinite-slider-mode="3d" data-cursor="Тянуть">
+          <div class="infinite__viewport" data-infinite-viewport>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 1">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf1/600/800" alt="Кадр 1" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 2">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf2/600/800" alt="Кадр 2" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 3">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf3/600/800" alt="Кадр 3" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 4">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf4/600/800" alt="Кадр 4" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 5">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf5/600/800" alt="Кадр 5" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 6">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf6/600/800" alt="Кадр 6" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 7">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf7/600/800" alt="Кадр 7" crossorigin="anonymous" />
+              </div>
+            </figure>
+            <figure class="infinite__slide" data-infinite-slide data-title="Кадр 8">
+              <div class="infinite__art" data-infinite-art>
+                <img src="https://picsum.photos/seed/inf8/600/800" alt="Кадр 8" crossorigin="anonymous" />
+              </div>
+            </figure>
+          </div>
+          <p class="infinite__title" data-infinite-title></p>
+        </div>
+      </section>
+
+      <section class="gallery" data-module="infinite-gallery" aria-label="Бесконечная галерея">
+        <div class="gallery__pin" data-gallery-pin>
+          <div class="gallery__viewport" data-gallery-viewport tabindex="0" data-cursor="Тянуть">
+            <div class="gallery__grid" data-gallery-grid>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g1/500/625"
+                  alt="Фото 1"
+                  loading="lazy"
+                  data-lightbox-title="Фото 1"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g2/500/625"
+                  alt="Фото 2"
+                  loading="lazy"
+                  data-lightbox-title="Фото 2"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g3/500/625"
+                  alt="Фото 3"
+                  loading="lazy"
+                  data-lightbox-title="Фото 3"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g4/500/625"
+                  alt="Фото 4"
+                  loading="lazy"
+                  data-lightbox-title="Фото 4"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g5/500/625"
+                  alt="Фото 5"
+                  loading="lazy"
+                  data-lightbox-title="Фото 5"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g6/500/625"
+                  alt="Фото 6"
+                  loading="lazy"
+                  data-lightbox-title="Фото 6"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g7/500/625"
+                  alt="Фото 7"
+                  loading="lazy"
+                  data-lightbox-title="Фото 7"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g8/500/625"
+                  alt="Фото 8"
+                  loading="lazy"
+                  data-lightbox-title="Фото 8"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g9/500/625"
+                  alt="Фото 9"
+                  loading="lazy"
+                  data-lightbox-title="Фото 9"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g10/500/625"
+                  alt="Фото 10"
+                  loading="lazy"
+                  data-lightbox-title="Фото 10"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g11/500/625"
+                  alt="Фото 11"
+                  loading="lazy"
+                  data-lightbox-title="Фото 11"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g12/500/625"
+                  alt="Фото 12"
+                  loading="lazy"
+                  data-lightbox-title="Фото 12"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g13/500/625"
+                  alt="Фото 13"
+                  loading="lazy"
+                  data-lightbox-title="Фото 13"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g14/500/625"
+                  alt="Фото 14"
+                  loading="lazy"
+                  data-lightbox-title="Фото 14"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g0/500/625"
+                  alt="Фото 15"
+                  loading="lazy"
+                  data-lightbox-title="Фото 15"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g1/500/625"
+                  alt="Фото 16"
+                  loading="lazy"
+                  data-lightbox-title="Фото 16"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g2/500/625"
+                  alt="Фото 17"
+                  loading="lazy"
+                  data-lightbox-title="Фото 17"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g3/500/625"
+                  alt="Фото 18"
+                  loading="lazy"
+                  data-lightbox-title="Фото 18"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g4/500/625"
+                  alt="Фото 19"
+                  loading="lazy"
+                  data-lightbox-title="Фото 19"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g5/500/625"
+                  alt="Фото 20"
+                  loading="lazy"
+                  data-lightbox-title="Фото 20"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g6/500/625"
+                  alt="Фото 21"
+                  loading="lazy"
+                  data-lightbox-title="Фото 21"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g7/500/625"
+                  alt="Фото 22"
+                  loading="lazy"
+                  data-lightbox-title="Фото 22"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g8/500/625"
+                  alt="Фото 23"
+                  loading="lazy"
+                  data-lightbox-title="Фото 23"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+              <figure class="gallery__item" data-gallery-item tabindex="0">
+                <img
+                  src="https://picsum.photos/seed/g9/500/625"
+                  alt="Фото 24"
+                  loading="lazy"
+                  data-lightbox-title="Фото 24"
+                  data-lightbox-meta="picsum.photos"
+                />
+              </figure>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="hscroll" data-module="hscroll" data-hscroll-min="md">
+        <div class="hscroll__pin" data-hscroll-pin>
+          <div class="container"><h2>Горизонтальный скролл</h2></div>
+          <div class="hscroll__progress" data-hscroll-progress></div>
+          <div class="hscroll__track" data-hscroll-track>
+            <article class="hscroll__card card" data-hscroll-card>
+              <div class="demo-photo">
+                <img data-hscroll-zoom src="https://picsum.photos/seed/h1/800/600" alt="" loading="lazy" />
+              </div>
+              <p class="h3" data-hscroll-scramble>2019</p>
+              <p class="muted">Этап 1</p>
+            </article>
+            <article class="hscroll__card card" data-hscroll-card>
+              <div class="demo-photo">
+                <img data-hscroll-zoom src="https://picsum.photos/seed/h2/800/600" alt="" loading="lazy" />
+              </div>
+              <p class="h3" data-hscroll-scramble>2020</p>
+              <p class="muted">Этап 2</p>
+            </article>
+            <article class="hscroll__card card" data-hscroll-card>
+              <div class="demo-photo">
+                <img data-hscroll-zoom src="https://picsum.photos/seed/h3/800/600" alt="" loading="lazy" />
+              </div>
+              <p class="h3" data-hscroll-scramble>2021</p>
+              <p class="muted">Этап 3</p>
+            </article>
+            <article class="hscroll__card card" data-hscroll-card>
+              <div class="demo-photo">
+                <img data-hscroll-zoom src="https://picsum.photos/seed/h4/800/600" alt="" loading="lazy" />
+              </div>
+              <p class="h3" data-hscroll-scramble>2022</p>
+              <p class="muted">Этап 4</p>
+            </article>
+            <article class="hscroll__card card" data-hscroll-card>
+              <div class="demo-photo">
+                <img data-hscroll-zoom src="https://picsum.photos/seed/h5/800/600" alt="" loading="lazy" />
+              </div>
+              <p class="h3" data-hscroll-scramble>2023</p>
+              <p class="muted">Этап 5</p>
+            </article>
+            <article class="hscroll__card card" data-hscroll-card>
+              <div class="demo-photo">
+                <img data-hscroll-zoom src="https://picsum.photos/seed/h6/800/600" alt="" loading="lazy" />
+              </div>
+              <p class="h3" data-hscroll-scramble>2024</p>
+              <p class="muted">Этап 6</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section container" data-module="flip-filter">
+        <h2>Flip-фильтр</h2>
+        <div class="flip-filter__tabs">
+          <button data-filter="all">Все</button><button data-filter="site">Сайт</button
+          ><button data-filter="landing">Лендинг</button><button data-filter="app">Приложение</button>
+        </div>
+        <div class="auto-grid">
+          <article class="card" data-flip-item data-category="site">
+            <img src="https://picsum.photos/seed/f0/600/400" alt="" loading="lazy" class="demo-thumb" />
+            <p>Сайт №1</p>
+          </article>
+          <article class="card" data-flip-item data-category="landing">
+            <img src="https://picsum.photos/seed/f1/600/400" alt="" loading="lazy" class="demo-thumb" />
+            <p>Лендинг №2</p>
+          </article>
+          <article class="card" data-flip-item data-category="app">
+            <img src="https://picsum.photos/seed/f2/600/400" alt="" loading="lazy" class="demo-thumb" />
+            <p>Приложение №3</p>
+          </article>
+          <article class="card" data-flip-item data-category="site">
+            <img src="https://picsum.photos/seed/f3/600/400" alt="" loading="lazy" class="demo-thumb" />
+            <p>Сайт №4</p>
+          </article>
+          <article class="card" data-flip-item data-category="landing">
+            <img src="https://picsum.photos/seed/f4/600/400" alt="" loading="lazy" class="demo-thumb" />
+            <p>Лендинг №5</p>
+          </article>
+          <article class="card" data-flip-item data-category="app">
+            <img src="https://picsum.photos/seed/f5/600/400" alt="" loading="lazy" class="demo-thumb" />
+            <p>Приложение №6</p>
+          </article>
+          <article class="card" data-flip-item data-category="site">
+            <img src="https://picsum.photos/seed/f6/600/400" alt="" loading="lazy" class="demo-thumb" />
+            <p>Сайт №7</p>
+          </article>
+          <article class="card" data-flip-item data-category="landing">
+            <img src="https://picsum.photos/seed/f7/600/400" alt="" loading="lazy" class="demo-thumb" />
+            <p>Лендинг №8</p>
+          </article>
+          <article class="card" data-flip-item data-category="app">
+            <img src="https://picsum.photos/seed/f8/600/400" alt="" loading="lazy" class="demo-thumb" />
+            <p>Приложение №9</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section container">
+        <h2>Стопка карточек</h2>
+        <div class="stack-cards" data-module="stack-cards">
+          <article class="stack-cards__item card demo-stack" data-stack-card>
+            <p class="muted">Шаг 1</p>
+            <h3 class="h2">Бриф и прототип</h3>
+          </article>
+          <article class="stack-cards__item card demo-stack" data-stack-card>
+            <p class="muted">Шаг 2</p>
+            <h3 class="h2">Дизайн</h3>
+          </article>
+          <article class="stack-cards__item card demo-stack" data-stack-card>
+            <p class="muted">Шаг 3</p>
+            <h3 class="h2">Вёрстка</h3>
+          </article>
+          <article class="stack-cards__item card demo-stack" data-stack-card>
+            <p class="muted">Шаг 4</p>
+            <h3 class="h2">Запуск</h3>
+          </article>
+        </div>
+      </section>
+
+      <section class="section container" data-module="lightbox">
+        <h2>Лайтбокс</h2>
+        <div class="auto-grid" style="--min: 200px">
+          <img
+            class="demo-thumb"
+            src="https://picsum.photos/seed/l1/800/600"
+            alt="Фото 1"
+            data-lightbox
+            data-lightbox-title="Фото 1"
+            loading="lazy"
+          /><img
+            class="demo-thumb"
+            src="https://picsum.photos/seed/l2/800/600"
+            alt="Фото 2"
+            data-lightbox
+            data-lightbox-title="Фото 2"
+            loading="lazy"
+          /><img
+            class="demo-thumb"
+            src="https://picsum.photos/seed/l3/800/600"
+            alt="Фото 3"
+            data-lightbox
+            data-lightbox-title="Фото 3"
+            loading="lazy"
+          /><img
+            class="demo-thumb"
+            src="https://picsum.photos/seed/l4/800/600"
+            alt="Фото 4"
+            data-lightbox
+            data-lightbox-title="Фото 4"
+            loading="lazy"
+          />
+        </div>
+      </section>
+    </main>
+    <include src="footer.html"></include>
+  </body>
+</html>

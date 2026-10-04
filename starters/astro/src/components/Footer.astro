@@ -1,0 +1,11 @@
+---
+import { useTranslations } from '../i18n/ui'
+const t = useTranslations(Astro.currentLocale)
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <p>© {new Date().getFullYear()} · {t('footer.rights')}</p>
+  </div>
+</footer>
+<button class="scroll-top" data-module="scroll-top" aria-label="↑">↑</button>

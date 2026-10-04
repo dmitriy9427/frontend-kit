@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro'
+import { useTranslations } from '../i18n/ui'
+const t = useTranslations(Astro.currentLocale)
+---
+
+<Base title={t('notFound.title')}>
+  <section class="container section stack not-found">
+    <h1>404</h1>
+    <p class="lead">{t('notFound.title')}</p>
+    <p><a class="btn" href="/">{t('notFound.back')}</a></p>
+  </section>
+</Base>
