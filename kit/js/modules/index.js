@@ -45,6 +45,7 @@ export const kitModules = {
   autosize: lazy(() => import('./autosize/index.js')),
   'char-counter': lazy(() => import('./char-counter/index.js')),
   stepper: lazy(() => import('./stepper/index.js')),
+  range: lazy(() => import('./range/index.js')),
   toast: lazy(() => import('./toast/index.js')),
   'lang-switch': lazy(() => import('./lang-switch/index.js')),
   // Эффекты (GSAP, WebGL)
