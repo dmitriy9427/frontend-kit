@@ -46,6 +46,12 @@ const DEFAULTS = {
   once: true,
 }
 
+/** Элемент сейчас в пределах экрана (и вообще отрисован). */
+export function inViewport(el) {
+  const rect = el.getBoundingClientRect()
+  return rect.height > 0 && rect.top < window.innerHeight && rect.bottom > 0
+}
+
 export default function reveal(root, ctx = {}) {
   const options = readOptions(root, 'reveal', DEFAULTS, ctx.options)
   const targets = [...(root.hasAttribute('data-reveal') ? [root] : []), ...root.querySelectorAll('[data-reveal]')]
@@ -61,6 +67,11 @@ export default function reveal(root, ctx = {}) {
     if (!PRESETS[name]) console.warn(`[kit] reveal: нет пресета «${name}». Есть: ${Object.keys(PRESETS).join(', ')}`)
     return PRESETS[name] ?? PRESETS.up
   }
+
+  // Уже видны при загрузке (первый экран) — показываем сразу. Иначе всё, что
+  // ниже линии start ('top 85%'), но на экране — например, цифры внизу hero, —
+  // висело бы невидимым, пока не прокрутишь. Мерить — ДО gsap.set (сдвиг y).
+  const visible = new Set(targets.filter(inViewport))
 
   targets.forEach((el) => {
     const { to: _to, ...from } = presetOf(el) // to — конечное состояние, здесь не нужно
@@ -85,7 +96,9 @@ export default function reveal(root, ctx = {}) {
       clearProps: 'transform,clipPath',
     })
 
-  const triggers = ScrollTrigger.batch(targets, {
+  if (visible.size) show([...visible])
+  const rest = targets.filter((el) => !visible.has(el))
+  const triggers = ScrollTrigger.batch(rest, {
     start: options.start,
     once: options.once,
     onEnter: show,

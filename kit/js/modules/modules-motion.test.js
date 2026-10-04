@@ -37,6 +37,24 @@ describe('reveal', () => {
     expect(h2.style.opacity).toBe('')
   })
 
+  it('видимое при загрузке показывает сразу, а не ждёт прокрутки', () => {
+    // Регрессия: элемент внизу первого экрана (ниже линии 'top 85%') оставался
+    // невидимым до прокрутки.
+    const root = html('<section><p data-reveal>низ экрана</p><p data-reveal>ниже</p></section>')
+    const [first, second] = root.querySelectorAll('p')
+    vi.spyOn(first, 'getBoundingClientRect').mockReturnValue({
+      top: window.innerHeight - 40,
+      bottom: window.innerHeight,
+      height: 40,
+    })
+    const batch = vi.spyOn(ScrollTrigger, 'batch')
+    const to = vi.spyOn(gsap, 'to')
+    const api = reveal(root, motion())
+    expect(to.mock.calls[0][0]).toEqual([first])
+    expect(batch.mock.lastCall[0]).toEqual([second])
+    api.destroy()
+  })
+
   it('reduced motion — просто показывает; неизвестный пресет — предупреждение', () => {
     const root = html('<section><h2 data-reveal>a</h2></section>')
     expect(reveal(root, createCtx())).toBeUndefined()

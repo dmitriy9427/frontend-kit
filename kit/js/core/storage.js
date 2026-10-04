@@ -8,7 +8,16 @@
  * @module kit/core/storage
  */
 
-export function readStorage(key, fallback = null) {
+/**
+ * Прочитать значение (JSON). Нет значения или ошибка — вернётся fallback.
+ * Тип результата берётся из fallback: readStorage('ids', []) → массив.
+ * Содержимое могли поменять руками — проверяйте форму данных (Array.isArray…).
+ * @template [T=any]
+ * @param {string} key
+ * @param {T} [fallback]
+ * @returns {T | any}
+ */
+export function readStorage(key, fallback = /** @type {T} */ (/** @type {unknown} */ (null))) {
   try {
     const raw = window.localStorage.getItem(key)
     return raw === null ? fallback : JSON.parse(raw)
