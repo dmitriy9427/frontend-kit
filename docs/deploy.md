@@ -18,6 +18,18 @@ BASE_URL=/promo/ npm run build
 
 Иначе 404 на стили и скрипты. В React-стартере маршрутизатор подхватывает base сам.
 
+**Ссылки в разметке.** Пути к стилям, скриптам и картинкам Vite переписывает сам,
+а `<a href>` — нет: `href="/ui-kit.html"` в подпапке ведёт мимо сайта. Поэтому в
+vanilla-стартере ссылки пишутся через `%BASE_URL%` (Vite подставит base, работает и
+в кусках из `partials/`):
+
+```html
+<a href="%BASE_URL%ui-kit.html">UI-кит</a>   <!-- /ui-kit.html или /promo/ui-kit.html -->
+<a href="%BASE_URL%#faq">Вопросы</a>
+```
+
+В JS — `import.meta.env.BASE_URL + 'photos/1.jpg'`.
+
 ## Вёрстка для бэкенда (CMS)
 
 Отдайте `dist/` или ссылку на репозиторий. Бэкенд-разработчику важно:

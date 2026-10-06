@@ -74,7 +74,9 @@ export function useFlip(
     })
     // Новое изменение посреди анимации — доводим старую до конца, иначе
     // элементы останутся с промежуточными inline-стилями.
-    return () => animation.progress(1).kill()
+    return () => {
+      animation.progress(1).kill()
+    }
   }, [key, selector, duration, ease, absolute])
 
   return [ref, capture]
