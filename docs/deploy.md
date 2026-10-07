@@ -24,7 +24,8 @@ vanilla-стартере ссылки пишутся через `%BASE_URL%` (Vi
 в кусках из `partials/`):
 
 ```html
-<a href="%BASE_URL%ui-kit.html">UI-кит</a>   <!-- /ui-kit.html или /promo/ui-kit.html -->
+<a href="%BASE_URL%ui-kit.html">UI-кит</a>
+<!-- /ui-kit.html или /promo/ui-kit.html -->
 <a href="%BASE_URL%#faq">Вопросы</a>
 ```
 

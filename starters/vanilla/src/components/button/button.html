@@ -1,0 +1,16 @@
+<!--
+  Кнопка или ссылка-кнопка с иконкой.
+    <x-button>Отправить</x-button>                                   <button type="button">
+    <x-button href="/price.html" variant="secondary">Цены</x-button> <a> — если есть href
+    <x-button icon="arrow-right" size="lg" type="submit">Далее</x-button>
+  variant: secondary | ghost (см. kit/scss/components/_button.scss), size: sm | lg.
+  Остальные атрибуты (class, id, data-*, aria-*) переходят на кнопку сами.
+-->
+<a x-if="href" :href="href" :class="['btn', variant && 'btn--' + variant, size && 'btn--' + size]">
+  <slot />
+  <x-icon x-if="icon" :name="icon" />
+</a>
+<button x-else :type="type ?? 'button'" :class="['btn', variant && 'btn--' + variant, size && 'btn--' + size]">
+  <slot />
+  <x-icon x-if="icon" :name="icon" />
+</button>

@@ -66,6 +66,17 @@ describe('select: одиночный', () => {
     expect(root.querySelector('.select__value').textContent).toBe('Тула')
   })
 
+  it('клик по стрелке внутри <label> не закрывает список сразу (label не уводит фокус)', () => {
+    const { root, input } = setup()
+    const arrow = root.querySelector('.select__arrow')
+    arrow.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }))
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true })
+    arrow.dispatchEvent(click)
+    expect(click.defaultPrevented).toBe(true) // переадресация label на скрытый select отменена
+    expect(root.classList.contains('is-open')).toBe(true)
+    expect(document.activeElement).toBe(input)
+  })
+
   it('клавиатура: ↓ открывает, disabled пропускается, Enter выбирает, Esc закрывает', () => {
     const { native, root, input } = setup()
     key(input, 'ArrowDown')

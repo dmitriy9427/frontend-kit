@@ -48,6 +48,7 @@ const SHARED_FILES = [
   'eslint.config.js',
   'stylelint.config.js',
   'vitest.config.js',
+  '.vscode',
 ]
 
 /** Что не копировать никогда. */
@@ -63,7 +64,10 @@ export const PACKAGES = {
       '@types/three',
       '@vitest/coverage-v8',
       'eslint',
+      'dom-serializer',
+      'domhandler',
       'globals',
+      'htmlparser2',
       'jsdom',
       'prettier',
       'sass',
@@ -105,6 +109,8 @@ export const PACKAGES = {
 /** Скрипты по стекам (у Astro своя команда вместо vite). */
 const SCRIPTS = {
   vite: { dev: 'vite', build: 'vite build', preview: 'vite preview', typecheck: 'tsc -p .' },
+  /** Генератор заготовок (kit/cli/new.mjs) — для вёрстки на HTML-компонентах. */
+  vanilla: { new: 'node kit/cli/new.mjs' },
   astro: { dev: 'astro dev', build: 'astro build', preview: 'astro preview', typecheck: 'astro check' },
 }
 
@@ -135,6 +141,7 @@ export function buildPackageJson({ name, stack, template = readJson(join(TEMPLAT
     engines: template.engines,
     scripts: {
       ...SCRIPTS[stack === 'astro' ? 'astro' : 'vite'],
+      ...(stack === 'vanilla' ? SCRIPTS.vanilla : {}),
       test: 'vitest run',
       'test:watch': 'vitest',
       coverage: 'vitest run --coverage',
@@ -187,7 +194,7 @@ const STACK_NAMES = {
 
 const STRUCTURE = {
   vanilla:
-    '| `*.html`, `partials/` | страницы и общие куски (шапка, подвал) |\n| `src/modules/` | модули ЭТОГО проекта (data-module) |',
+    '| `*.html` | страницы (собираются из компонентов) |\n| `src/components/` | компоненты: `имя/имя.html` + `.scss` + `.js` → `<x-имя>` |\n| `src/data/` | данные для разметки (JSON/JS): `faq.json` → `{{ faq }}` |\n| `src/icons/` | SVG-иконки → спрайт, `<x-icon name="…" />` |\n| `src/modules/` | модули без своей разметки (`data-module`) |\n\nНовый компонент/модуль/страница: `npm run new -- component card --js`.',
   react: '| `src/pages/`, `src/components/` | страницы и компоненты React |',
   'react-ts': '| `src/pages/`, `src/components/` | страницы и компоненты React (TypeScript) |',
   astro:
@@ -246,7 +253,7 @@ export function createProject({ target, stack, name = packageName(target), log =
     cpSync(join(TEMPLATE, 'docs'), join(dest, 'docs'), { recursive: true, filter: notSkipped })
   // 3. Настройки инструментов. tsconfig: у react-ts и astro — свой (уже скопирован
   //    со стартером), JS-проектам — общий с проверкой JSDoc.
-  for (const file of SHARED_FILES) cpSync(join(TEMPLATE, file), join(dest, file))
+  for (const file of SHARED_FILES) cpSync(join(TEMPLATE, file), join(dest, file), { recursive: true })
   if (!existsSync(join(dest, 'tsconfig.json'))) {
     writeFileSync(join(dest, 'tsconfig.json'), projectTsconfig(readFileSync(join(TEMPLATE, 'tsconfig.json'), 'utf8')))
   }

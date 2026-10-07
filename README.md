@@ -4,28 +4,31 @@
 
 # 🧰 frontend-kit
 
-**Личный шаблон для старта проектов: модули, формы, SCSS, i18n, dev-панель — vanilla / React / Astro**
+**Личный шаблон для старта проектов: HTML-компоненты, модули, формы, SCSS, i18n, dev-панель — vanilla / React / Astro**
 
 ### [Открыть демо (vanilla-стартер) →](https://dmitriy9427.github.io/frontend-kit/)
 
-![Vite](https://img.shields.io/badge/Vite-646cff?style=flat-square&logo=vite&logoColor=white) ![React](https://img.shields.io/badge/React-20232a?style=flat-square&logo=react&logoColor=61dafb) ![Astro](https://img.shields.io/badge/Astro-bc52ee?style=flat-square&logo=astro&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?style=flat-square&logo=typescript&logoColor=white) ![GSAP](https://img.shields.io/badge/GSAP-0ae448?style=flat-square&logo=greensock&logoColor=black) ![тесты 211](https://img.shields.io/badge/%D1%82%D0%B5%D1%81%D1%82%D1%8B_211-2ea44f?style=flat-square) [![Деплой](https://github.com/dmitriy9427/frontend-kit/actions/workflows/pages.yml/badge.svg)](https://github.com/dmitriy9427/frontend-kit/actions/workflows/pages.yml)
+![Vite](https://img.shields.io/badge/Vite-646cff?style=flat-square&logo=vite&logoColor=white) ![React](https://img.shields.io/badge/React-20232a?style=flat-square&logo=react&logoColor=61dafb) ![Astro](https://img.shields.io/badge/Astro-bc52ee?style=flat-square&logo=astro&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?style=flat-square&logo=typescript&logoColor=white) ![GSAP](https://img.shields.io/badge/GSAP-0ae448?style=flat-square&logo=greensock&logoColor=black) ![тесты 247](https://img.shields.io/badge/%D1%82%D0%B5%D1%81%D1%82%D1%8B_247-2ea44f?style=flat-square) [![Деплой](https://github.com/dmitriy9427/frontend-kit/actions/workflows/pages.yml/badge.svg)](https://github.com/dmitriy9427/frontend-kit/actions/workflows/pages.yml)
 
 </div>
 
-| Формы |
-| --- |
+| Формы                                                  |
+| ------------------------------------------------------ |
 | <img src="docs/screenshots/kit-form.webp" alt="Формы"> |
 
 ## Коротко
 
-| | |
-| :---: | --- |
-| 🧩 | **36 модулей** — модалки, табы, слайдеры, 3D-барабан, Flip-фильтр, курсор… — подключение через data-module |
-| 📝 | **Формы** — схемы в стиле zod, 9 масок, ошибки с сервера под полями |
-| 🌐 | **i18n** — склонения, ru/en, hreflang и sitemap в Astro |
-| 🛠 | **Dev-панель** — сетка, макет поверх вёрстки, FPS, проверка доступности — в прод не попадает |
-| ⚡ | **4 стартера** — vanilla, React, React + TS, Astro — `npm run create` |
-| ✅ | **Качество** — 211 тестов, ESLint, Stylelint, проверка JSDoc-типов |
+|     |                                                                                                                                                              |
+| :-: | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 🧱  | **HTML-компоненты** — папка = `card.html` + `card.scss` + `card.js` → `<x-card>`; props, слоты, `x-for`/`x-if`, данные из JSON; стили и JS подключаются сами |
+| 🧩  | **36 модулей** — модалки, табы, слайдеры, 3D-барабан, Flip-фильтр, курсор… — `data-module`, связь через `ctx.modules` и шину                                 |
+| 🎨  | **SVG-спрайт** — `src/icons/*.svg` → `<x-icon name>`, в страницу только нужные иконки                                                                        |
+| 🪄  | **Генератор** — `npm run new -- component card --js`, `module`, `plugin`, `page`                                                                             |
+| 📝  | **Формы** — схемы в стиле zod, 9 масок, ошибки с сервера под полями                                                                                          |
+| 🌐  | **i18n** — склонения, ru/en, hreflang и sitemap в Astro                                                                                                      |
+|  🛠  | **Dev-панель** — сетка, макет поверх вёрстки, FPS, проверка доступности — в прод не попадает                                                                 |
+| ⚡  | **4 стартера** — vanilla, React, React + TS, Astro — `npm run create`                                                                                        |
+| ✅  | **Качество** — 247 тестов, ESLint, Stylelint, проверка JSDoc-типов                                                                                           |
 
 Автор — [Дмитрий Рябов](https://dmitriy9427.github.io/resume/), frontend-разработчик.
 

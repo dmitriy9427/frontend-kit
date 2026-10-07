@@ -1,0 +1,14 @@
+{
+  "name": "Название компании",
+  "title": "Новый проект",
+  "description": "Стартовая страница проекта на frontend-kit",
+  "phone": "+7 (800) 000-00-00",
+  "email": "hello@example.com",
+  "nav": [
+    { "href": "", "label": "Главная" },
+    { "href": "#features", "label": "Возможности" },
+    { "href": "#faq", "label": "Вопросы" },
+    { "href": "ui-kit.html", "label": "UI-кит" },
+    { "href": "effects.html", "label": "Эффекты" }
+  ]
+}

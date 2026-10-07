@@ -13,9 +13,10 @@ frontend-kit/
 │   ├── scss/            ← стили: настройки, функции, миксины, база, компоненты
 │   ├── react/           ← React: useModule, KitProvider, хуки (только в React-проектах)
 │   ├── devtools/        ← dev-панель (только в разработке)
-│   └── vite/            ← Vite-плагины: include, страницы, мок-API, защита прода
+│   ├── vite/            ← Vite-плагины: HTML-компоненты, SVG-спрайт, страницы, мок-API, защита прода
+│   └── cli/new.mjs      ← генератор: npm run new -- component|module|page
 ├── starters/
-│   ├── vanilla/         ← вёрстка: index.html, ui-kit.html, effects.html, partials/, src/
+│   ├── vanilla/         ← вёрстка: index.html, ui-kit.html, effects.html, src/components/, src/data/
 │   ├── react/           ← React (JS): src/App.jsx, pages/, components/
 │   ├── react-ts/        ← React + TypeScript (strict)
 │   └── astro/           ← Astro: ru + en, SEO, sitemap, TypeScript
@@ -32,11 +33,18 @@ frontend-kit/
 
 ```
 my-site/
-├── index.html, ui-kit.html, 404.html, privacy.html   ← страницы (vanilla)
-├── partials/            ← куски HTML: head, header, footer, модалки
+├── index.html, ui-kit.html, 404.html, privacy.html   ← страницы (vanilla) — собираются из компонентов
 ├── src/
 │   ├── main.js          ← точка входа: стили, запуск модулей, dev-панель
-│   ├── modules/         ← модули ЭТОГО проекта (+ index.js — реестр)
+│   ├── components/      ← компоненты: card/card.html + card.scss + card.js → <x-card>
+│   │   ├── site-head/, site-header/, site-footer/   ← каркас страниц
+│   │   ├── button/, icon/, section-head/, faq/      ← UI
+│   │   └── price-calc/  ← пример компонента со своим JS и тестом
+│   ├── data/            ← данные для разметки: site.json (название, меню), faq.json…
+│   ├── icons/           ← SVG-иконки → спрайт (<x-icon name="…" />)
+│   ├── modules/         ← модули без своей разметки (регистрируются сами)
+│   ├── plugins/         ← код на весь сайт: аналитика, внешние ссылки (запускаются сами)
+│   ├── lib/gsap.js      ← GSAP проекта: плагины и настройки в одном месте
 │   ├── forms/schemas.js ← схемы форм проекта
 │   └── styles/          ← _abstracts.scss (настройки), main.scss, стили блоков
 ├── mocks/               ← фейковый API: mocks/callback.js → POST /api/callback
@@ -48,15 +56,20 @@ my-site/
 
 ## Что где менять
 
-| Хочу                                    | Где                                                          |
-| --------------------------------------- | ------------------------------------------------------------ |
-| Цвета, шрифты, брейкпоинты              | `src/styles/_abstracts.scss`                                 |
-| Стили блока                             | `src/styles/…` — свой файл на блок, подключить в `main.scss` |
-| Шапка, подвал, `<head>`                 | `partials/` (vanilla), `src/components/` (React)             |
-| Новое поведение                         | `src/modules/<имя>/` + строка в `src/modules/index.js`       |
-| Правила формы                           | `src/forms/schemas.js`                                       |
-| Ответ API в разработке                  | `mocks/<путь>.js`                                            |
-| Поведение модуля кита для ЭТОГО проекта | см. ниже                                                     |
+| Хочу                                    | Где                                                            |
+| --------------------------------------- | -------------------------------------------------------------- |
+| Цвета, шрифты, брейкпоинты              | `src/styles/_abstracts.scss`                                   |
+| Новый блок вёрстки                      | `npm run new -- component имя` → `src/components/имя/`         |
+| Стили блока                             | `src/components/имя/имя.scss` (подключается сам)               |
+| Общие стили страниц                     | `src/styles/…` — свой файл, подключить в `main.scss`           |
+| Шапка, подвал, `<head>`                 | `src/components/site-*/` (vanilla), `src/components/` (React)  |
+| Название, телефон, пункты меню          | `src/data/site.json`                                           |
+| Тексты списков (FAQ, тарифы, команда)   | `src/data/*.json`                                              |
+| Иконка                                  | положить `.svg` в `src/icons/`, вставить `<x-icon name>`       |
+| Новое поведение                         | `npm run new -- module имя` → `src/modules/имя/` (без реестра) |
+| Правила формы                           | `src/forms/schemas.js`                                         |
+| Ответ API в разработке                  | `mocks/<путь>.js`                                              |
+| Поведение модуля кита для ЭТОГО проекта | см. ниже                                                       |
 
 ## Можно ли править kit/ в проекте
 

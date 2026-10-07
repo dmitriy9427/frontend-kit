@@ -1,0 +1,16 @@
+<!--
+  Вопросы-ответы на модуле accordion из кита. data-module писать не нужно —
+  он уже в разметке компонента: <x-faq :items="faq" />
+  items: [{ question, answer }] — answer может содержать HTML (выводится {{{ }}}).
+  open — номер раскрытого по умолчанию вопроса (с нуля), multiple — несколько сразу.
+-->
+<div class="accordion" data-module="accordion" :data-accordion-multiple="multiple">
+  <div x-for="(item, i) of items" class="accordion__item" data-accordion-item :data-open="i === Number(open ?? 0)">
+    <h3 class="h4">
+      <button class="accordion__trigger" data-accordion-trigger>{{ item.question }}</button>
+    </h3>
+    <div class="accordion__panel" data-accordion-panel>
+      <div class="accordion__inner">{{{ item.answer }}}</div>
+    </div>
+  </div>
+</div>

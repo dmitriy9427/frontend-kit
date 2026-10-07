@@ -1,0 +1,15 @@
+[
+  {
+    "question": "Как начать новый проект?",
+    "answer": "<p><code>npm run create -- ../my-site</code> — и выберите стек.</p>"
+  },
+  {
+    "question": "Как сделать свой компонент?",
+    "answer": "<p><code>npm run new -- component card</code> создаст папку <code>src/components/card/</code> с разметкой, стилями и (по желанию) JS. Подробно — docs/components.md.</p>"
+  },
+  {
+    "question": "Попадут ли dev-инструменты на прод?",
+    "answer": "<p>Нет: они отрезаются при сборке, а если нет — сборка остановится с ошибкой.</p>"
+  },
+  { "question": "Где описаны частые баги?", "answer": "<p>В docs/troubleshooting.md — симптом, причина, решение.</p>" }
+]

@@ -38,19 +38,23 @@ if (import.meta.env.DEV) import('kit/devtools/index.js').then((m) => m.installDe
 
 ```js
 plugins: [...kit()] // vanilla
-plugins: [react(), ...kit({ include: false, pages: false })] // React
+plugins: [react(), ...kit({ include: false, pages: false, icons: { always: 'all' } })] // React: иконки рисует JS
 ```
 
-### html-include
+### html (компоненты)
 
-```html
-<include src="header.html" title="Главная"></include>
-```
+`<x-card title="…">` → разметка из `src/components/card/card.html`; `{{ выражения }}`,
+`x-for`, `x-if`/`x-else`, `:attr`, слоты, данные из `src/data/`. Ссылки на текущую страницу
+получают `aria-current="page"`. Старый `<include src="header.html">` из `partials/` тоже
+работает. Всё — в [components.md](components.md).
 
-В куске: `{{ title }}`, `{{ title | значение по умолчанию }}`. Вложенные include, переменные
-родителя доступны детям. Ссылки на текущую страницу получают `aria-current="page"`.
-Include внутри HTML-комментариев не разворачиваются (можно писать примеры).
-Ошибки понятные: нет файла, цикл (a → b → a), нет `src`, путь за пределами `partials/`.
+Настройки: `kit({ include: { components: 'src/components', partials: 'partials', data: 'src/data' } })`.
+
+### svg-sprite
+
+`src/icons/*.svg` → `<symbol>` во встроенном спрайте страницы, только используемые иконки.
+Подробно — [icons.md](icons.md). Настройки: `kit({ icons: { dir, prefix, always } })`,
+`icons: false` — выключить.
 
 ### pages
 

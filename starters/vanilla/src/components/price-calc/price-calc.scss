@@ -1,0 +1,43 @@
+@use 'abstracts' as *;
+
+.price-calc {
+  display: grid;
+  gap: space(8);
+  padding: space(6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: radius('lg');
+  accent-color: var(--color-accent); // ползунок и галочки — цвета бренда
+
+  @include up('md') {
+    grid-template-columns: 1.4fr 1fr;
+    padding: space(8);
+  }
+}
+
+.price-calc__fields {
+  display: grid;
+  gap: space(6);
+}
+
+.price-calc__options {
+  display: grid;
+  gap: space(3);
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.price-calc__total {
+  display: grid;
+  gap: space(3);
+  align-content: center;
+  justify-items: start;
+}
+
+.price-calc__sum {
+  font-size: fluid(36px, 56px);
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}

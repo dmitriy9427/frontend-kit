@@ -64,63 +64,75 @@ npm run dev          # http://localhost:5173
 
 ## 4. Первая страница (vanilla)
 
-Создайте `about.html` в корне — она сама попадёт в сборку:
+```bash
+npm run new -- page about "О компании"
+```
+
+Создастся `about.html` — она сама попадёт в сборку:
 
 ```html
 <!doctype html>
 <html lang="ru">
   <head>
-    <include src="head.html" title="О компании" description="Кто мы"></include>
+    <x-site-head title="О компании" />
   </head>
   <body>
-    <include src="header.html"></include>
-    <main id="main" class="container section" data-module="reveal">
-      <h1 data-reveal>О компании</h1>
+    <x-site-header />
+    <main id="main" data-module="reveal">
+      <section class="section">
+        <div class="container stack">
+          <x-section-head title="О компании" />
+          <p data-reveal>Содержимое страницы</p>
+        </div>
+      </section>
     </main>
-    <include src="footer.html"></include>
+    <x-site-footer />
   </body>
 </html>
 ```
 
-`<include>` вставляет кусок из `partials/`. Ссылка на текущую страницу в меню получит
-`aria-current="page"` сама.
+`<x-site-head>`, `<x-site-header>`, `<x-site-footer>` — компоненты из `src/components/`:
+мета-теги, шапка с меню из `src/data/site.json`, подвал с модалкой. Ссылка на текущую страницу
+в меню получит `aria-current="page"` сама. Добавьте пункт в `site.nav` — он появится на всех
+страницах.
 
-## 5. Первый модуль
+## 5. Первый компонент
 
 ```bash
-cp -r src/modules/hello src/modules/price-calc
-```
-
-```js
-// src/modules/price-calc/index.js
-import { createDisposer } from 'kit/js/core/lifecycle.js'
-import { readOptions } from 'kit/js/core/options.js'
-
-const DEFAULTS = { rate: 1500 }
-
-export default function priceCalc(el, ctx = {}) {
-  const options = readOptions(el, 'price-calc', DEFAULTS, ctx.options)
-  const d = createDisposer()
-  const input = el.querySelector('input')
-  const out = el.querySelector('output')
-  d.listen(input, 'input', () => (out.value = Number(input.value) * options.rate))
-  return { destroy: d.dispose }
-}
-```
-
-```js
-// src/modules/index.js
-export const projectModules = {
-  hello: lazy(() => import('./hello/index.js')),
-  'price-calc': lazy(() => import('./price-calc/index.js')),
-}
+npm run new -- component team-card
 ```
 
 ```html
-<div data-module="price-calc" data-price-calc-rate="2000"><input type="number" /> × 2000 = <output></output> ₽</div>
+<!-- src/components/team-card/team-card.html -->
+<article class="team-card">
+  <img :src="person.photo" :alt="person.name" width="320" height="320" loading="lazy" />
+  <h3>{{ person.name }}</h3>
+  <p class="muted">{{ person.role }}</p>
+</article>
 ```
 
-Контракт модуля и все правила — [modules.md](modules.md#свой-модуль).
+```json
+// src/data/team.json
+[
+  { "name": "Анна", "role": "Дизайнер", "photo": "/images/anna.jpg" },
+  { "name": "Игорь", "role": "Разработчик", "photo": "/images/igor.jpg" }
+]
+```
+
+```html
+<!-- about.html -->
+<div class="auto-grid" style="--min: 240px">
+  <x-team-card x-for="p of team" :person="p" />
+</div>
+```
+
+Стили — в `src/components/team-card/team-card.scss`, подключаются сами. Нужно поведение —
+`npm run new -- component team-card --js` (или добавьте `team-card.js` рядом): модуль
+запустится сам, `data-module` писать не нужно.
+
+Всё о компонентах — props, слоты, циклы, условия, данные, JS — [components.md](components.md).
+Модули без своей разметки и связь модулей между собой — [modules.md](modules.md).
+GSAP, аналитика и код на весь сайт — [plugins.md](plugins.md).
 
 ## 6. Dev-панель
 

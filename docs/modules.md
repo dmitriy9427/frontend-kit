@@ -4,35 +4,79 @@
 одном элементе — через пробел: `data-module="reveal magnetic"`. Настройки — атрибутами
 `data-<модуль>-<настройка>` (или `ctx.options` из JS/React — они важнее атрибутов).
 
-Живые примеры всех модулей — страница **ui-kit.html** стартера.
+Живые примеры всех модулей — страницы **ui-kit.html** и **effects.html** стартера.
+
+**В этом документе:** [каталог модулей кита](#каталог) ·
+[нужно ли писать data-module](#нужно-ли-писать-data-module) · [свой модуль](#свой-модуль) ·
+[связь модулей](#связь-модулей) · [жизненный цикл](#жизненный-цикл-и-подгружаемый-контент).
+
+## Нужно ли писать data-module
+
+| Ситуация                                              | data-module                                                               |
+| ----------------------------------------------------- | ------------------------------------------------------------------------- |
+| Компонент со своим JS (`src/components/card/card.js`) | **не нужен** — плагин ставит его корню сам                                |
+| Модуль кита внутри компонента (`<x-faq>` = аккордеон) | пишется **один раз** в разметке компонента                                |
+| Модуль кита/проекта на обычной разметке страницы      | нужен: `<div data-module="marquee">`                                      |
+| Добавить модуль к компоненту в одном месте            | атрибутом вызова: `<x-button data-module="magnetic">` — допишется к корню |
+| Разметка из CMS, htmx, «Показать ещё»                 | нужен; модули запустятся сами, когда блок появится в DOM                  |
+
+Почему не «полностью автоматически» (например, по классу `.accordion`): атрибут — явное
+«включи здесь поведение». По классу модуль запускался бы на любом блоке с таким классом —
+в том числе в чужой разметке из CMS, где этого не ждали. Один и тот же класс часто нужен
+только для стилей. А компоненты убирают ручную работу там, где она действительно повторяется.
+
+Модули проекта и компонентов регистрируются **сами** по папкам (`src/main.js`):
+
+```js
+const components = modulesFromGlob(import.meta.glob(['./components/*/*.js', '!./components/**/*.test.js']))
+const projectModules = modulesFromGlob(import.meta.glob(['./modules/*/index.js']))
+createApp({ modules: { ...kitModules, ...projectModules, ...components } })
+```
+
+Имя модуля = имя файла (`card.js` → `card`) или папки (`modules/copy-link/index.js` →
+`copy-link`). Одноимённый модуль проекта **заменяет** модуль кита — так правят кит под проект,
+не трогая `kit/`.
 
 ## Каталог
 
-| Модуль                          | Для чего                                              | Загрузка |
-| ------------------------------- | ----------------------------------------------------- | -------- |
-| [reveal](#reveal)               | Появление элементов при прокрутке                     | сразу    |
-| [menu](#menu)                   | Мобильное меню (бургер)                               | сразу    |
-| [sticky-header](#sticky-header) | Шапка прячется при прокрутке вниз                     | сразу    |
-| [theme-switch](#theme-switch)   | Светлая/тёмная тема                                   | сразу    |
-| [accordion](#accordion)         | Раскрывающиеся блоки, FAQ                             | лениво   |
-| [tabs](#tabs)                   | Вкладки (состояние в адресе)                          | лениво   |
-| [dialog](#dialog)               | Модальное окно (открывается и по ссылке #id)          | лениво   |
-| [slider](#slider)               | Карусель на scroll-snap                               | лениво   |
-| [marquee](#marquee)             | Бегущая строка                                        | лениво   |
-| [split-text](#split-text)       | Заголовок появляется по строкам/словам/буквам         | лениво   |
-| [counter](#counter)             | Число «набегает»                                      | лениво   |
-| [parallax](#parallax)           | Параллакс                                             | лениво   |
-| [magnetic](#magnetic)           | Кнопка тянется за курсором                            | лениво   |
-| [scroll-top](#scroll-top)       | Кнопка «Наверх»                                       | лениво   |
-| [lazy-video](#lazy-video)       | Фоновое видео: грузится и играет, только когда видно  | лениво   |
-| [form](#form)                   | Проверка, маски, отправка формы                       | лениво   |
-| [mask](#mask)                   | Маска на отдельном поле                               | лениво   |
-| [file-upload](#file-upload)     | Загрузка файлов                                       | лениво   |
-| [password](#password)           | Показать/скрыть пароль                                | лениво   |
-| [autosize](#autosize)           | Textarea растёт по тексту                             | лениво   |
-| [char-counter](#char-counter)   | Счётчик символов                                      | лениво   |
-| [stepper](#stepper)             | Поле количества − 1 +                                 | лениво   |
-| [toast](#toast)                 | Уведомления (`toast()` из JS или кнопки `data-toast`) | лениво   |
+| Модуль                                | Для чего                                              | Загрузка |
+| ------------------------------------- | ----------------------------------------------------- | -------- |
+| [reveal](#reveal)                     | Появление элементов при прокрутке                     | сразу    |
+| [menu](#menu)                         | Мобильное меню (бургер)                               | сразу    |
+| [sticky-header](#sticky-header)       | Шапка прячется при прокрутке вниз                     | сразу    |
+| [theme-switch](#theme-switch)         | Светлая/тёмная тема                                   | сразу    |
+| [accordion](#accordion)               | Раскрывающиеся блоки, FAQ                             | лениво   |
+| [tabs](#tabs)                         | Вкладки (состояние в адресе)                          | лениво   |
+| [dialog](#dialog)                     | Модальное окно (открывается и по ссылке #id)          | лениво   |
+| [slider](#slider)                     | Карусель на scroll-snap                               | лениво   |
+| [marquee](#marquee)                   | Бегущая строка                                        | лениво   |
+| [split-text](#split-text)             | Заголовок появляется по строкам/словам/буквам         | лениво   |
+| [counter](#counter)                   | Число «набегает»                                      | лениво   |
+| [parallax](#parallax)                 | Параллакс                                             | лениво   |
+| [magnetic](#magnetic)                 | Кнопка тянется за курсором                            | лениво   |
+| [scroll-top](#scroll-top)             | Кнопка «Наверх»                                       | лениво   |
+| [lazy-video](#lazy-video)             | Фоновое видео: грузится и играет, только когда видно  | лениво   |
+| [form](#form)                         | Проверка, маски, отправка формы                       | лениво   |
+| [mask](#mask)                         | Маска на отдельном поле                               | лениво   |
+| [file-upload](#file-upload)           | Загрузка файлов                                       | лениво   |
+| [password](#password)                 | Показать/скрыть пароль                                | лениво   |
+| [autosize](#autosize)                 | Textarea растёт по тексту                             | лениво   |
+| [char-counter](#char-counter)         | Счётчик символов                                      | лениво   |
+| [stepper](#stepper)                   | Поле количества − 1 +                                 | лениво   |
+| [toast](#toast)                       | Уведомления (`toast()` из JS или кнопки `data-toast`) | лениво   |
+| [select](#select)                     | Красивый выпадающий список с поиском                  | лениво   |
+| [lang-switch](#lang-switch)           | Переключатель языка                                   | лениво   |
+| [swiper](#swiper)                     | Swiper: петля, эффекты, миниатюры, автопрокрутка      | лениво   |
+| [infinite-slider](#infinite-slider)   | Бесконечная лента с инерцией (в т.ч. WebGL)           | лениво   |
+| [infinite-gallery](#infinite-gallery) | Бесконечная галерея, тянется во все стороны           | лениво   |
+| [lightbox](#lightbox)                 | Просмотр фото на весь экран                           | лениво   |
+| [hscroll](#hscroll)                   | Горизонтальная прокрутка секции при скролле вниз      | лениво   |
+| [flip-filter](#flip-filter)           | Фильтр карточек с плавной перестановкой               | лениво   |
+| [stack-cards](#stack-cards)           | Карточки складываются стопкой при прокрутке           | лениво   |
+| [scramble-text](#scramble-text)       | Текст «перебирает» символы                            | лениво   |
+| [draw-svg](#draw-svg)                 | Линии SVG «рисуются»                                  | лениво   |
+| [scroll-progress](#scroll-progress)   | Полоса прогресса чтения                               | лениво   |
+| [cursor](#cursor)                     | Свой курсор                                           | лениво   |
 
 «Лениво» — код модуля скачивается, только если такой блок есть на странице.
 
@@ -451,38 +495,246 @@ toast('Ошибка сети', { type: 'error', duration: 0 }) // 0 — пока
 
 ## Свой модуль
 
+Создать заготовку: `npm run new -- module copy-link` (модуль для чужой разметки) или
+`npm run new -- component card --js` (компонент со своей разметкой — [components.md](components.md)).
+
+### Контракт
+
+Модуль — функция, которая получает элемент и контекст и возвращает объект с `destroy`:
+
 ```js
-import { createDisposer } from 'kit/js/core/lifecycle.js'
-import { readOptions } from 'kit/js/core/options.js'
-
-// 1. Все настройки — со значениями по умолчанию: по ним понятен ТИП атрибута.
-const DEFAULTS = { speed: 1, label: 'Открыть', loop: false }
-
-export default function myModule(el, ctx = {}) {
-  // 2. data-my-module-speed="2" → options.speed = 2 (число, т.к. по умолчанию число)
-  const options = readOptions(el, 'my-module', DEFAULTS, ctx.options)
-  // 3. Нужен обязательный элемент — понятная ошибка, а не «Cannot read properties of null».
-  const button = el.querySelector('[data-my-module-button]')
-  if (!button) throw new Error('[my-module] нужен [data-my-module-button] внутри')
-  // 4. Всё, что включили, — сразу «на выключение».
-  const d = createDisposer()
-  d.listen(button, 'click', () => {})
-  // 5. Уважаем просьбу «меньше движения».
-  if (!ctx.reduced) {
-    /* анимации */
+export default function myModule(el, ctx) {
+  // включили поведение
+  return {
+    destroy() {
+      /* выключили всё, что включили */
+    },
   }
-  // 6. destroy убирает ВСЁ: обработчики, таймеры, анимации, добавленные элементы.
-  return { destroy: d.dispose }
 }
 ```
 
-Что есть в `ctx`: `bus` (шина событий), `scroll` (плавный скролл: `scrollTo`, `stop`, `start`),
-`reduced` (меньше движения), `breakpoints`, `options` (из JS/React).
+Больше от модуля ничего не требуется. Регистрация, поиск элементов, повторный запуск,
+ленивая загрузка, ошибки — забота реестра (`kit/js/core/registry.js`).
 
-Правила, которые делают модуль надёжным:
+### Разбор по шагам: «Копировать ссылку»
 
-- не ищите элементы по всему `document`, если они внутри `el`, — блоков может быть несколько;
-- не храните состояние в глобальных переменных — у каждого блока своё;
-- общение с другими модулями — через `ctx.bus.emit/on`, а не импорт;
-- чистую логику (расчёты) выносите в отдельные функции с `export` — их легко тестировать;
-- тест рядом: `my-module.test.js` (см. [testing.md](testing.md)).
+Задача: кнопка копирует адрес (или текст из настройки) и на 2 секунды меняет подпись.
+
+```html
+<button data-module="copy-link" data-copy-link-text="https://example.com/promo">Скопировать ссылку</button>
+<button data-module="copy-link">Скопировать адрес этой страницы</button>
+```
+
+```js
+// src/modules/copy-link/index.js
+import { createDisposer } from 'kit/js/core/lifecycle.js'
+import { readOptions } from 'kit/js/core/options.js'
+import { toast } from 'kit/js/modules/toast/index.js'
+
+// 1. ВСЕ настройки со значениями по умолчанию. Тип значения = тип настройки:
+//    data-copy-link-timeout="3000" станет числом, потому что здесь число.
+const DEFAULTS = {
+  text: '', // пусто — копируем адрес страницы
+  done: 'Скопировано ✓',
+  timeout: 2000,
+}
+
+export default function copyLink(el, ctx = {}) {
+  // 2. Настройки: data-copy-link-* + ctx.options (из JS/React, важнее атрибутов).
+  const options = readOptions(el, 'copy-link', DEFAULTS, ctx.options)
+  // 3. Disposer: всё, что включаем, сразу регистрируем на выключение.
+  const d = createDisposer()
+  const label = el.textContent
+
+  async function copy() {
+    const text = options.text || location.href
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch {
+      toast('Не удалось скопировать — браузер запретил доступ к буферу', { type: 'error' })
+      return
+    }
+    el.textContent = options.done
+    // Таймер через d.timeout — если блок удалят раньше, таймер не сработает на удалённом элементе.
+    d.timeout(() => (el.textContent = label), options.timeout)
+    // 4. Сообщаем «наружу» — аналитика, другие модули. Кто слушает — модулю неважно.
+    ctx.bus?.emit('copy-link:copied', { text })
+  }
+
+  d.listen(el, 'click', copy)
+
+  // 5. API: что можно сделать с модулем снаружи (ctx.modules.get(el, 'copy-link').copy()).
+  return {
+    copy,
+    destroy() {
+      d.dispose()
+      el.textContent = label // вернуть разметку как было
+    },
+  }
+}
+```
+
+Регистрировать не нужно — папка `src/modules/copy-link/` подхватится сама.
+
+### Что есть в ctx
+
+| Поле              | Что это                             | Пример                                                                   |
+| ----------------- | ----------------------------------- | ------------------------------------------------------------------------ |
+| `ctx.bus`         | шина событий                        | `ctx.bus.emit('cart:add', item)`, `d.add(ctx.bus.on('cart:add', fn))`    |
+| `ctx.modules`     | доступ к другим модулям             | `await ctx.modules.when('#callback', 'dialog')` — [ниже](#связь-модулей) |
+| `ctx.scroll`      | плавный скролл (Lenis)              | `ctx.scroll.scrollTo('#faq')`, `ctx.scroll.stop()`                       |
+| `ctx.reduced`     | пользователь просит меньше движения | `if (!ctx.reduced) gsap.from(...)`                                       |
+| `ctx.breakpoints` | брейкпоинты из SCSS                 | `ctx.breakpoints.md` → `768`                                             |
+| `ctx.options`     | настройки из JS/React               | важнее data-атрибутов                                                    |
+
+### Что умеет disposer
+
+```js
+const d = createDisposer()
+d.listen(window, 'resize', onResize, { passive: true }) // addEventListener + снять при destroy
+d.timeout(fn, 500) // setTimeout + отменить
+d.interval(fn, 1000) // setInterval + отменить
+d.add(ctx.bus.on('cart:add', fn)) // любая функция-«выключатель»
+d.add(() => tween.kill()) // анимации GSAP
+d.dispose() // выключить всё разом (в обратном порядке)
+```
+
+### Правила надёжного модуля
+
+- **Ищите элементы внутри `el`**, а не по всему `document`: блоков на странице может быть
+  несколько. `el.querySelector('[data-copy-link-button]')`, а не `document.querySelector(...)`.
+- **Состояние — в замыкании функции**, не в глобальных переменных: у каждого блока своё.
+- **Нет обязательного элемента — понятная ошибка**:
+  `if (!input) throw new Error('[price-calc] нужен [data-calc-pages] внутри')`. Реестр
+  напишет её в консоль с элементом и запустит остальные модули.
+- **`destroy` убирает всё**: обработчики, таймеры, анимации, добавленные элементы и классы.
+  Проверка: запустить → destroy → запустить снова — дублей быть не должно.
+- **Уважайте `ctx.reduced`**: без анимаций, сразу конечное состояние.
+- **Расчёты — отдельными функциями с `export`**: их проще тестировать без DOM.
+- **Тест рядом** (`copy-link.test.js`, см. [testing.md](testing.md)).
+
+### Модуль с тяжёлой библиотекой
+
+Импортируйте библиотеку внутри модуля — модули проекта ленивые, и библиотека скачается, только
+если блок есть на странице:
+
+```js
+// src/modules/map/index.js
+export default async function map(el, ctx) {
+  const { default: maplibre } = await import('maplibre-gl') // отдельный файл сборки
+  const instance = new maplibre.Map({ container: el, style: '…' })
+  return { map: instance, destroy: () => instance.remove() }
+}
+```
+
+Асинхронный модуль (возвращает Promise) — нормально: реестр дождётся его, а `ctx.modules.when`
+вернёт экземпляр, когда он готов.
+
+---
+
+## Связь модулей
+
+Три способа, от слабой связи к сильной.
+
+### 1. События через шину — когда модулю всё равно, кто слушает
+
+```js
+// калькулятор: «заявка готова» — и всё
+ctx.bus.emit('price:order', { sum: 67000 })
+
+// аналитика (src/main.js или отдельный модуль): «если будет заявка — отправлю цель»
+app.ctx.bus.on('price:order', (calc) => ym(12345, 'reachGoal', 'calc-order', calc))
+
+// корзина в шапке: подписка с replay — получит последнее значение, даже если
+// событие было до её запуска
+d.add(ctx.bus.on('cart:change', render, { replay: true }))
+```
+
+Имена событий — `«область:что»`: `cart:add`, `dialog:open`, `price:order`. Список событий
+проекта стоит вести в README проекта.
+
+### 2. ctx.modules — когда нужен конкретный модуль и его методы
+
+Модуль возвращает объект с методами — это его API:
+
+```js
+// dialog из кита возвращает { open, close, isOpen, destroy }
+// accordion — { open(i), close(i), toggle(i), isOpen(i), destroy }
+```
+
+Другой модуль получает этот API через `ctx.modules` (вне модулей — `import { modules } from
+'kit/js/core/modules.js'`, в консоли dev — `__kit.modules`):
+
+| Метод                                      | Что возвращает                                                                                            |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `get(target, name?)`                       | экземпляр модуля на элементе (`target` — элемент или селектор); без `name` — если модуль на элементе один |
+| `all(name, scope?)`                        | все запущенные экземпляры: `all('accordion')`                                                             |
+| `first(name)`                              | первый запущенный                                                                                         |
+| `when(target, name?, { timeout, signal })` | **Promise**: дождаться запуска (элемента может ещё не быть)                                               |
+| `whenAny(name)`                            | Promise: первый модуль с таким именем где угодно                                                          |
+
+**Почему `when`, а не `get`.** Модули запускаются асинхронно и в произвольном порядке:
+ленивый модуль модалки скачивается по сети. Если калькулятор при старте сделает
+`get('#callback', 'dialog')`, он может получить `undefined` — модалка ещё грузится.
+`when` вернёт экземпляр сразу, если он готов, или дождётся. По умолчанию ждёт 10 с,
+потом — понятная ошибка «не дождались запуска: dialog на #callback. Есть ли он на странице?».
+
+Пример из стартера (`src/components/price-calc/price-calc.js`):
+
+```js
+d.listen(el, 'click', async (event) => {
+  if (!event.target.closest('[data-calc-order]')) return
+  const dialog = await ctx.modules.when('#callback', 'dialog') // ждём модалку
+  document.querySelector('#callback [name="comment"]').value = `Расчёт: ${sum} ₽`
+  dialog.open()
+})
+```
+
+Ещё примеры:
+
+```js
+// раскрыть вопрос FAQ по ссылке «Как оплатить?» в другом месте страницы
+d.listen(link, 'click', async () => {
+  const faq = await ctx.modules.when('#faq .accordion', 'accordion')
+  faq.open(2)
+  ctx.scroll?.scrollTo('#faq')
+})
+
+// все слайдеры на паузу, пока открыта модалка (dialog шлёт DOM-событие dialog:open, оно всплывает)
+d.listen(document, 'dialog:open', () => ctx.modules.all('swiper').forEach((s) => s.swiper?.autoplay?.stop()))
+
+// отменить ожидание, если модуль удалили раньше (htmx заменил блок)
+const controller = new AbortController()
+d.add(() => controller.abort())
+ctx.modules
+  .when('#cart', 'cart', { signal: controller.signal })
+  .then((cart) => cart.add(item))
+  .catch(() => {})
+```
+
+### 3. Прямой импорт — для общих функций, а не для модулей
+
+`import { toast } from 'kit/js/modules/toast/index.js'` — нормально: это функция, а не блок
+на странице. А вот импортировать модуль калькулятора в модуль корзины, чтобы вызвать его
+код, — нельзя: получится второй экземпляр без разметки. Для этого — пункты 1 и 2.
+
+### Что выбрать
+
+| Нужно                                                              | Способ                          |
+| ------------------------------------------------------------------ | ------------------------------- |
+| «Случилось X» — кому надо, отреагирует (аналитика, счётчики)       | `ctx.bus.emit`                  |
+| Вызвать метод конкретного блока (открыть модалку, переключить таб) | `ctx.modules.when(...).метод()` |
+| Узнать состояние другого блока (сумма калькулятора)                | `ctx.modules.get(...).value`    |
+| Общая утилита (формат цены, toast)                                 | обычный `import`                |
+
+---
+
+## Жизненный цикл и подгружаемый контент
+
+- `createApp` запускает модули всех `[data-module]` страницы и **следит за DOM**: блок,
+  добавленный позже (htmx, «Показать ещё», `innerHTML`), запустится сам, удалённый — сам
+  вызовет `destroy`.
+- Повторный запуск на том же элементе невозможен — реестр помнит запущенные модули.
+- Ошибка одного модуля не ломает остальные: в консоли — имя модуля, элемент и ошибка.
+- Опечатка в имени — предупреждение со списком доступных модулей.
+- Вручную: `app.mount(node)` / `app.unmount(node)` (если `createApp({ watch: false })`).

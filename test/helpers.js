@@ -2,6 +2,7 @@
  * Помощники для тестов модулей.
  */
 import { createBus } from '../kit/js/core/bus.js'
+import { modules } from '../kit/js/core/modules.js'
 
 /** Вставить HTML в документ и вернуть первый элемент. */
 export function html(markup) {
@@ -10,7 +11,7 @@ export function html(markup) {
 }
 
 /** Контекст модуля как в приложении, но без плавного скролла. */
-export const createCtx = (extra = {}) => ({ bus: createBus(), reduced: true, scroll: null, ...extra })
+export const createCtx = (extra = {}) => ({ bus: createBus(), reduced: true, scroll: null, modules, ...extra })
 
 /** Подождать завершения микрозадач/таймеров. */
 export const tick = (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms))

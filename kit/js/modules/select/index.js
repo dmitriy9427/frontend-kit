@@ -389,6 +389,12 @@ export default function select(native, ctx = {}) {
     setOpen(!open)
   })
   d.listen(control, 'click', (event) => {
+    // Селект обычно внутри <label class="field">. Клик по НЕинтерактивной части
+    // (стрелка, текст значения) label переадресует связанному полю — скрытому
+    // нативному select: фокус уходит с нашего input, blur закрывает список,
+    // который mousedown только что открыл («открылся и сразу закрылся»).
+    // preventDefault у click отменяет эту переадресацию.
+    if (event.target !== input) event.preventDefault()
     const remove = event.target.closest('.select__chip-remove')
     if (remove) {
       event.stopPropagation()

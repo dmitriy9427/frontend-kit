@@ -1,0 +1,30 @@
+<!--
+  Калькулятор стоимости — пример компонента со СВОИМ JS (price-calc.js).
+  data-module="price-calc" писать не нужно: раз рядом лежит price-calc.js,
+  плагин сам добавит его корневому элементу.
+
+    <x-price-calc :base="15000" :per-page="4000" />
+
+  Настройки из props попадают в data-атрибуты → JS читает их через readOptions.
+  Кнопка «Обсудить» открывает модалку #callback ДРУГОГО модуля через ctx.modules.
+-->
+<form class="price-calc" :data-price-calc-base="base ?? 15000" :data-price-calc-per-page="perPage ?? 4000">
+  <div class="price-calc__fields">
+    <label class="field">
+      <span class="field__label">Страниц: <b data-calc-pages-out>5</b></span>
+      <input class="price-calc__range" type="range" name="pages" min="1" max="30" value="5" data-calc-pages />
+    </label>
+    <fieldset class="price-calc__options">
+      <legend class="field__label">Дополнительно</legend>
+      <label x-for="option of options ?? calcOptions" class="checkbox">
+        <input type="checkbox" name="extras" :value="option.price" :data-label="option.label" />
+        <span>{{ option.label }} <span class="muted">+{{ option.price.toLocaleString('ru-RU') }} ₽</span></span>
+      </label>
+    </fieldset>
+  </div>
+  <div class="price-calc__total">
+    <p class="muted">Ориентировочно</p>
+    <output class="price-calc__sum" data-calc-total aria-live="polite">—</output>
+    <x-button icon="arrow-right" data-calc-order>Обсудить проект</x-button>
+  </div>
+</form>

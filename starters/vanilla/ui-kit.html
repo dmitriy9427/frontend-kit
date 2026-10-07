@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ru">
   <head>
-    <include src="head.html" title="UI-кит" description="Все компоненты проекта на одной странице"></include>
+    <x-site-head title="UI-кит" description="Все компоненты проекта на одной странице" />
   </head>
   <body>
-    <include src="header.html"></include>
+    <x-site-header />
     <!--
       UI-кит — «живой» каталог компонентов проекта. Зачем:
       - показать заказчику все состояния кнопок/полей до сборки страниц;
@@ -209,7 +209,7 @@
             <ul class="upload__list" data-file-upload-list></ul>
           </div>
           <div class="form-grid__wide">
-            <include src="consent.html"></include>
+            <x-consent />
           </div>
           <div class="cluster form-grid__wide">
             <button class="btn" type="submit">Отправить</button>
@@ -298,6 +298,6 @@
         </div>
       </section>
     </main>
-    <include src="footer.html"></include>
+    <x-site-footer />
   </body>
 </html>

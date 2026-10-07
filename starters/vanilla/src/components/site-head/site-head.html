@@ -1,13 +1,14 @@
 <!--
-  Общая часть <head> всех страниц. Переменные: title, description.
-  Подключение: <include src="head.html" title="…" description="…"></include>
+  Общая часть <head> всех страниц.
+    <head><x-site-head title="О нас" description="…" /></head>
+  Без title/description берутся site.title / site.description из src/data/site.json.
 -->
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>{{ title | Новый проект }}</title>
-<meta name="description" content="{{ description | Описание проекта }}" />
-<meta property="og:title" content="{{ title | Новый проект }}" />
-<meta property="og:description" content="{{ description | Описание проекта }}" />
+<title>{{ title ? title + ' — ' + site.title : site.title }}</title>
+<meta name="description" content="{{ description ?? site.description }}" />
+<meta property="og:title" content="{{ title ?? site.title }}" />
+<meta property="og:description" content="{{ description ?? site.description }}" />
 <meta name="theme-color" content="#3b5bff" />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <!--

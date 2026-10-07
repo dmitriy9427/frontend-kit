@@ -17,7 +17,10 @@ describe('create', () => {
     const dest = createProject({ target: join(root, 'My Site'), stack: 'vanilla', log: quiet })
     for (const file of [
       'index.html',
-      'partials/header.html',
+      'src/components/site-header/site-header.html',
+      'src/data/site.json',
+      'src/icons/check.svg',
+      'kit/cli/new.mjs',
       'src/main.js',
       'kit/js/core/app.js',
       'kit/scss/_index.scss',
@@ -39,6 +42,8 @@ describe('create', () => {
     expect(pkg.dependencies).toHaveProperty('gsap')
     expect(pkg.dependencies).not.toHaveProperty('react')
     expect(pkg.scripts.dev).toBe('vite')
+    expect(pkg.scripts.new).toBe('node kit/cli/new.mjs')
+    expect(pkg.devDependencies).toHaveProperty('htmlparser2')
     expect(readFileSync(join(dest, 'README.md'), 'utf8')).toContain('# my-site')
   })
 

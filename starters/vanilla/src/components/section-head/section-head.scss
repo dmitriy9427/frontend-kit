@@ -1,0 +1,29 @@
+// Заголовок секции. Стили компонента лежат рядом с его разметкой и
+// подключаются сами (src/main.js → import.meta.glob).
+@use 'abstracts' as *;
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: space(4) space(8);
+  align-items: end;
+  justify-content: space-between;
+}
+
+.section-head__text {
+  display: grid;
+  gap: space(2);
+  max-width: rem(720px);
+}
+
+.section-head__eyebrow {
+  font-size: rem(13px);
+  font-weight: 700;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.section-head__lead {
+  font-size: rem(18px);
+}

@@ -1,0 +1,27 @@
+@use 'abstracts' as *;
+
+.feature-card {
+  display: grid;
+  gap: space(3);
+  align-content: start;
+  padding: space(6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: radius('lg');
+  transition: transform var(--duration) var(--ease);
+
+  @include hover {
+    transform: translateY(-4px);
+  }
+}
+
+.feature-card__icon {
+  display: grid;
+  place-items: center;
+  width: rem(48px);
+  height: rem(48px);
+  font-size: rem(24px); // иконка — 1em
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  border-radius: radius('md');
+}

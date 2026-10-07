@@ -1,0 +1,14 @@
+<!--
+  Заголовок секции: надзаголовок, заголовок, подзаголовок и место для кнопок справа.
+    <x-section-head eyebrow="Отзывы" title="Нам пишут">
+      <template slot="aside"><x-button href="#">Все отзывы</x-button></template>
+    </x-section-head>
+-->
+<div class="section-head">
+  <div class="section-head__text">
+    <p x-if="eyebrow" class="section-head__eyebrow" data-reveal="fade">{{ eyebrow }}</p>
+    <h2 class="section-head__title" data-reveal>{{ title }}</h2>
+    <p x-if="text" class="section-head__lead muted" data-reveal>{{ text }}</p>
+  </div>
+  <div x-if="$slots.aside" class="section-head__aside"><slot name="aside" /></div>
+</div>

@@ -1,14 +1,10 @@
 <!doctype html>
 <html lang="ru">
   <head>
-    <include
-      src="head.html"
-      title="Эффекты"
-      description="Swiper, бесконечные слайдеры, галерея и эффекты на GSAP"
-    ></include>
+    <x-site-head title="Эффекты" description="Swiper, бесконечные слайдеры, галерея и эффекты на GSAP" />
   </head>
   <body>
-    <include src="header.html"></include>
+    <x-site-header />
     <div class="scroll-progress" data-module="scroll-progress"></div>
     <div class="cursor" data-module="cursor"></div>
     <!--
@@ -97,7 +93,8 @@
         </div>
       </section>
 
-      <section class="section container stack" style="--gap: 24px">
+      <!-- overflow-x: clip — стопка карт (пресет cards) выступает вправо и давала бы прокрутку вбок на телефоне -->
+      <section class="section container stack" style="--gap: 24px; overflow-x: clip">
         <h2>Swiper: пресеты fade, cards, coverflow</h2>
         <div class="demo-grid">
           <div class="swiper demo-fade" data-module="swiper" data-swiper-preset="fade">
@@ -712,6 +709,6 @@
         </div>
       </section>
     </main>
-    <include src="footer.html"></include>
+    <x-site-footer />
   </body>
 </html>

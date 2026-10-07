@@ -1,0 +1,16 @@
+<!--
+  Иконка из спрайта (файлы — src/icons/*.svg, плагин kit/vite/svg-sprite.js).
+    <x-icon name="phone" />                     декоративная (рядом есть текст)
+    <x-icon name="close" label="Закрыть" />     смысловая — скринридер прочитает label
+    <x-icon name="check" size="lg" />           sm 16px · md 24px · lg 32px; без size — 1em
+  Цвет — CSS color родителя.
+-->
+<svg
+  :class="['icon', size && 'icon--' + size]"
+  :role="label ? 'img' : null"
+  :aria-label="label"
+  :aria-hidden="label ? null : 'true'"
+  focusable="false"
+>
+  <use :href="'#icon-' + name"></use>
+</svg>
