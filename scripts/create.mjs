@@ -328,9 +328,7 @@ export function updateKit({ target, configs = false, log = console.log }) {
     for (const file of UPDATABLE_CONFIGS) {
       const from = join(TEMPLATE, file)
       const to = join(dest, file)
-      const same =
-        existsSync(to) && !statSync(from).isDirectory() && readFileSync(from, 'utf8') === readFileSync(to, 'utf8')
-      if (same) continue
+      if (sameTree(from, to)) continue
       cpSync(from, to, { recursive: true })
       changedConfigs.push(file)
     }
