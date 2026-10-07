@@ -52,6 +52,7 @@ export const NESTED_SCROLL = [
   '.mobile-menu',
   '.select__dropdown',
   '.scroll-area',
+  '[data-overlayscrollbars-viewport]', // модуль scrollbar
   'textarea',
   'iframe',
 ].join(', ')

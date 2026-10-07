@@ -493,6 +493,56 @@ toast('Ошибка сети', { type: 'error', duration: 0 }) // 0 — пока
 
 ---
 
+### tooltip
+
+Подсказка у любого элемента — **без `data-module`**: подключена на весь сайт плагином
+`src/plugins/03-tooltips.js` и работает для элементов, добавленных позже.
+
+```html
+<button aria-label="Удалить" data-tooltip><x-icon name="trash" /></button>
+<!-- текст = aria-label -->
+<a href="/price.pdf" data-tooltip="PDF, 2 МБ">Прайс</a>
+<span tabindex="0" data-tooltip="Справа" data-tooltip-placement="right">?</span>
+<abbr tabindex="0" data-tooltip-template="#vat">НДС</abbr>
+<template id="vat"><b>НДС 20%</b><br />уже в цене</template>
+```
+
+| Атрибут                       | Что делает                                                                                     |
+| ----------------------------- | ---------------------------------------------------------------------------------------------- |
+| `data-tooltip="текст"`        | текст подсказки; пустой — берётся `aria-label`                                                 |
+| `data-tooltip-placement`      | `top` (по умолчанию), `bottom`, `left`, `right`, `top-start`… — у края экрана перевернётся сам |
+| `data-tooltip-template="#id"` | разметка из `<template>` (только своя разметка — не текст пользователей)                       |
+
+Мышь — показ с задержкой 300 мс; клавиатура — при фокусе (Tab); Esc — спрятать (модалка
+под подсказкой не закрывается). Подсказка в верхнем слое (popover): видна поверх `<dialog>`.
+Позиция — Floating UI. Настройки — `createTooltips({ delay, offset, placement })` в плагине.
+На тач-экранах наведения нет: важное не прячьте только в подсказку, иконкам-кнопкам нужен `aria-label`.
+
+### scrollbar
+
+Скроллбар **поверх** содержимого блока (не отнимает ширину), прячется, когда блок не крутят,
+одинаковый во всех ОС. На OverlayScrollbars, прокрутка остаётся нативной.
+
+```html
+<div class="card" data-module="scrollbar" style="max-height: 320px">…</div>
+<div data-module="scrollbar" data-scrollbar-axis="x">широкая таблица</div>
+<div data-module="scrollbar" data-scrollbar-auto-hide="never">…</div>
+```
+
+| Атрибут                          | По умолчанию | Значения                           |
+| -------------------------------- | ------------ | ---------------------------------- |
+| `data-scrollbar-axis`            | `y`          | `y`, `x`, `both`                   |
+| `data-scrollbar-auto-hide`       | `leave`      | `leave`, `scroll`, `move`, `never` |
+| `data-scrollbar-auto-hide-delay` | `600`        | мс                                 |
+
+API: `ctx.modules.get(el, 'scrollbar').viewport.scrollTo({ top: 0 })`, `.instance` — полный
+API библиотеки. Для **всей страницы** модуль не используйте: страница красится CSS
+(`kit/scss/base/_scrollbar.scss`) — так не ломаются sticky, ScrollTrigger и Lenis.
+Цвета обоих вариантов — переменные `--scrollbar-thumb`, `--scrollbar-thumb-hover`,
+`--scrollbar-size`.
+
+---
+
 ## Свой модуль
 
 Создать заготовку: `npm run new -- module copy-link` (модуль для чужой разметки) или

@@ -267,6 +267,37 @@
       </section>
 
       <section class="stack">
+        <h2 class="h3">Подсказки</h2>
+        <!-- Подсказки работают на всём сайте (плагин src/plugins/03-tooltips.js) — data-module не нужен -->
+        <div class="cluster">
+          <x-button variant="secondary" data-tooltip="Подсказка сверху">Наведите</x-button>
+          <x-button variant="secondary" data-tooltip="А эта — справа" data-tooltip-placement="right">Справа</x-button>
+          <button class="btn btn--ghost" aria-label="Скопировать" data-tooltip><x-icon name="check" /></button>
+          <span class="muted" tabindex="0" data-tooltip-template="#tooltip-rich">Разметка в подсказке ⓘ</span>
+        </div>
+        <template id="tooltip-rich"><b>НДС 20%</b><br />уже включён в цену</template>
+        <p class="muted">Tab по кнопкам — подсказка появится и с клавиатуры, Esc — спрячет.</p>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Скроллбары</h2>
+        <div class="auto-grid" style="--min: 280px">
+          <div class="stack" style="--gap: 8px">
+            <p class="muted">CSS (весь сайт, без JS): <code>.scroll-area</code></p>
+            <div class="scroll-area card" style="max-height: 220px">
+              <p x-for="n of 12">Строка {{ n }} — колесо крутит блок, а не страницу.</p>
+            </div>
+          </div>
+          <div class="stack" style="--gap: 8px">
+            <p class="muted">Модуль <code>scrollbar</code> — поверх содержимого, прячется</p>
+            <div class="card" data-module="scrollbar" style="max-height: 220px">
+              <p x-for="n of 12">Строка {{ n }} — скроллбар не отнимает ширину.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stack">
         <h2 class="h3">Слайдер с автопрокруткой</h2>
         <div
           class="slider"

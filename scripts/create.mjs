@@ -57,7 +57,7 @@ const SKIP = new Set(['node_modules', 'dist', 'coverage', '.DS_Store', '.tmp'])
 /** Пакеты по стекам. Версии берутся из package.json шаблона — один источник. */
 export const PACKAGES = {
   common: {
-    dependencies: ['gsap', 'lenis', 'swiper', 'three'],
+    dependencies: ['@floating-ui/dom', 'gsap', 'lenis', 'overlayscrollbars', 'swiper', 'three'],
     devDependencies: [
       '@eslint/js',
       '@types/node',

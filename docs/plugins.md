@@ -79,7 +79,8 @@ export default function errors() {
 - `01-external-links.js` — внешние ссылки открываются в новой вкладке с `rel="noopener"`
   (в том числе ссылки из текстов CMS);
 - `02-analytics.js` — события модулей (`price:order`) → цели Яндекс Метрики. Модули не знают
-  про счётчик: они шлют события, а плагин решает, какие из них — цели.
+  про счётчик: они шлют события, а плагин решает, какие из них — цели;
+- `03-tooltips.js` — подсказки `data-tooltip` на всём сайте ([modules.md → tooltip](modules.md#tooltip)).
 
 ## Плавный скролл и блоки со своей прокруткой
 
@@ -107,3 +108,19 @@ createApp({ smooth: { prevent: (node) => node.matches('.chat__messages, .map') }
 
 `.scroll-area` = `overflow: auto` + `overscroll-behavior: contain` (докрутили до конца —
 страница не «протаскивается»), и Lenis его не трогает.
+
+## Красивые скроллбары
+
+Два слоя, оба — в цветах темы (переменные `--scrollbar-thumb`, `--scrollbar-thumb-hover`,
+`--scrollbar-size` в `kit/scss/base/_scrollbar.scss`):
+
+|                                       | CSS (по умолчанию)              | Модуль `scrollbar`                                  |
+| ------------------------------------- | ------------------------------- | --------------------------------------------------- |
+| Где                                   | вся страница и все блоки        | отдельный блок: `data-module="scrollbar"`           |
+| Как выглядит                          | тонкий системный, в цветах темы | поверх содержимого, прячется, одинаковый во всех ОС |
+| JS                                    | нет                             | OverlayScrollbars (~15 КБ, лениво)                  |
+| Ломает sticky / ScrollTrigger / Lenis | нет                             | нет (только для блоков, не для body)                |
+
+Почему не SimpleBar или OverlayScrollbars на всю страницу: они заменяют прокрутку окна
+прокруткой своего блока — ломаются `position: sticky`, ScrollTrigger, Lenis, якоря и
+восстановление позиции при «Назад».
