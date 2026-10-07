@@ -77,6 +77,13 @@ describe('create', () => {
     expect(pkg.devDependencies).toHaveProperty('htmlparser2')
     expect(pkg.dependencies.gsap).toBe('^3.0.0') // версии проекта не трогаем
     expect(logs.join('\n')).toMatch(/htmlparser2@.*npm install/s)
+    // --configs: общие настройки обновляются, .gitignore проекта — нет.
+    writeFileSync(join(dest, 'stylelint.config.js'), '// старый конфиг')
+    writeFileSync(join(dest, '.gitignore'), 'мой-игнор')
+    updateKit({ target: dest, configs: true, log: (m) => logs.push(m) })
+    expect(readFileSync(join(dest, 'stylelint.config.js'), 'utf8')).toContain('ignoreFiles')
+    expect(readFileSync(join(dest, '.gitignore'), 'utf8')).toBe('мой-игнор')
+    expect(logs.at(-1)).toMatch(/настройки: stylelint\.config\.js/)
     expect(readFileSync(join(dest, 'kit/js/core/math.js'), 'utf8')).toContain('export const clamp')
     expect(existsSync(join(dest, 'kit/react'))).toBe(false)
     expect(() => updateKit({ target: root, log: quiet })).toThrow(/не проект/)

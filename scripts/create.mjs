@@ -6,6 +6,7 @@
  *   npm run create -- ../my-site --stack vanilla     — без вопросов
  *   npm run create -- ../my-app --stack react --install --git
  *   npm run create -- --update ../my-site            — обновить папку kit/ в проекте
+ *   npm run create -- --update ../my-site --configs  — и общие настройки (линтеры, тесты, .vscode)
  *
  * ─── Что получается ─────────────────────────────────────────────────────────
  * Самостоятельный проект: внутри своя копия kit/ (без зависимости от этого
@@ -20,7 +21,7 @@
  * (перед этим закоммитьте проект — будет видно, что изменилось).
  * @module scripts/create
  */
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { basename, dirname, join, relative, resolve, sep } from 'node:path'
 import { execSync } from 'node:child_process'
 import { createInterface } from 'node:readline/promises'
@@ -291,8 +292,28 @@ export function addMissingPackages({ pkg, stack }) {
   return added
 }
 
-/** Обновить kit/ в существующем проекте (перезаписывает файлы кита, добавляет недостающие пакеты). */
-export function updateKit({ target, log = console.log }) {
+/** Совпадают ли файл или папка (по содержимому всех файлов). */
+function sameTree(a, b) {
+  if (!existsSync(b)) return false
+  if (!statSync(a).isDirectory())
+    return !statSync(b).isDirectory() && readFileSync(a, 'utf8') === readFileSync(b, 'utf8')
+  if (!statSync(b).isDirectory()) return false
+  const names = readdirSync(a)
+  return names.length === readdirSync(b).length && names.every((n) => sameTree(join(a, n), join(b, n)))
+}
+
+/**
+ * Общие настройки, которые --configs обновляет в проекте. Без .gitignore:
+ * его часто дополняют под проект.
+ */
+export const UPDATABLE_CONFIGS = SHARED_FILES.filter((file) => file !== '.gitignore')
+
+/**
+ * Обновить kit/ в существующем проекте (перезаписывает файлы кита, добавляет недостающие пакеты).
+ * @param {{ target: string, configs?: boolean, log?: (s: string) => void }} o
+ *   configs — ещё и общие настройки (eslint, stylelint, prettier, vitest, .vscode…).
+ */
+export function updateKit({ target, configs = false, log = console.log }) {
   const dest = resolve(target)
   const pkgPath = join(dest, 'package.json')
   if (!existsSync(join(dest, 'kit')) || !existsSync(pkgPath))
@@ -302,9 +323,22 @@ export function updateKit({ target, log = console.log }) {
   const stack = deps.react ? 'react' : deps.astro ? 'astro' : 'vanilla'
   cpSync(join(TEMPLATE, 'kit'), join(dest, 'kit'), { recursive: true, filter: kitFilter(stack) })
   cpSync(join(TEMPLATE, 'test'), join(dest, 'test'), { recursive: true, filter: notSkipped })
+  const changedConfigs = []
+  if (configs) {
+    for (const file of UPDATABLE_CONFIGS) {
+      const from = join(TEMPLATE, file)
+      const to = join(dest, file)
+      const same =
+        existsSync(to) && !statSync(from).isDirectory() && readFileSync(from, 'utf8') === readFileSync(to, 'utf8')
+      if (same) continue
+      cpSync(from, to, { recursive: true })
+      changedConfigs.push(file)
+    }
+  }
   const added = addMissingPackages({ pkg, stack })
   if (added.length) writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`)
   log(`✓ Кит обновлён в ${dest} (${stack}). Посмотрите изменения: git diff kit/`)
+  if (changedConfigs.length) log(`  ↻ настройки: ${changedConfigs.join(', ')} — проверьте git diff`)
   if (added.length) log(`  + пакеты для новой версии кита: ${added.join(', ')}\n  Выполните npm install`)
   return dest
 }
@@ -338,7 +372,10 @@ async function main() {
     return
   }
   if (args.update) {
-    updateKit({ target: args._[0] ?? (typeof args.update === 'string' ? args.update : '.') })
+    updateKit({
+      target: args._[0] ?? (typeof args.update === 'string' ? args.update : '.'),
+      configs: Boolean(args.configs),
+    })
     return
   }
 
