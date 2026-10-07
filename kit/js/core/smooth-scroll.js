@@ -51,6 +51,7 @@ export const NESTED_SCROLL = [
   '[popover]',
   '.mobile-menu',
   '.select__dropdown',
+  '.select__scroller',
   '.scroll-area',
   '[data-overlayscrollbars-viewport]', // модуль scrollbar
   'textarea',

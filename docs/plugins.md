@@ -121,6 +121,27 @@ createApp({ smooth: { prevent: (node) => node.matches('.chat__messages, .map') }
 | JS                                    | нет                             | OverlayScrollbars (~15 КБ, лениво)                  |
 | Ломает sticky / ScrollTrigger / Lenis | нет                             | нет (только для блоков, не для body)                |
 
+**Внутри модулей кита — сами.** Выпадающий список селекта и окно модалки получают плавающий
+скроллбар автоматически (`kit/js/core/scrollbars.js`), чтобы не было серой системной полосы в
+Windows. Условия: есть мышь (на тач-экранах остаётся системный — он и так тонкий), код
+библиотеки грузится лениво при первом таком блоке. Выключить:
+
+```js
+// для всего проекта — в src/plugins/
+import { setKitScrollbars } from 'kit/js/core/scrollbars.js'
+export default () => setKitScrollbars(false)
+```
+
+```html
+<!-- для одного блока -->
+<dialog id="video" class="dialog" data-module="dialog" data-scrollbar="native">…</dialog>
+```
+
+> Модалка: библиотека переносит содержимое `.dialog__box` во внутренний блок прокрутки.
+> Если JS добавляет что-то в окно после запуска — добавляйте во вложенный элемент (форму,
+> `.dialog__content`), а не прямо в `.dialog__box`, иначе новый элемент окажется рядом с
+> прокруткой, а не внутри неё.
+
 Почему не SimpleBar или OverlayScrollbars на всю страницу: они заменяют прокрутку окна
 прокруткой своего блока — ломаются `position: sticky`, ScrollTrigger, Lenis, якоря и
 восстановление позиции при «Назад».

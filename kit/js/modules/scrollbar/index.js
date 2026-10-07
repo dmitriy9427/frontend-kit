@@ -30,6 +30,7 @@
 import { OverlayScrollbars } from 'overlayscrollbars'
 import 'overlayscrollbars/overlayscrollbars.css'
 import { readOptions } from '../../core/options.js'
+import { scrollbarOptions } from '../../core/scrollbars.js'
 
 const DEFAULTS = {
   /** Направление: y — вертикально, x — горизонтально, both — оба. */
@@ -44,18 +45,15 @@ const DEFAULTS = {
 
 export default function scrollbar(el, ctx = {}) {
   const options = readOptions(el, 'scrollbar', DEFAULTS, ctx.options)
-  const instance = OverlayScrollbars(el, {
-    overflow: {
-      x: options.axis === 'y' ? 'hidden' : 'scroll',
-      y: options.axis === 'x' ? 'hidden' : 'scroll',
-    },
-    scrollbars: {
-      theme: options.theme,
-      autoHide: /** @type {'never' | 'scroll' | 'leave' | 'move'} */ (options.autoHide),
+  const instance = OverlayScrollbars(
+    el,
+    scrollbarOptions({
+      axis: /** @type {'x' | 'y' | 'both'} */ (options.axis),
+      autoHide: options.autoHide,
       autoHideDelay: options.autoHideDelay,
-      clickScroll: true,
-    },
-  })
+      theme: options.theme,
+    }),
+  )
   return {
     /** Экземпляр OverlayScrollbars — полный API библиотеки. */
     instance,
