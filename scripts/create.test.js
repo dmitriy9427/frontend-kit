@@ -65,7 +65,18 @@ describe('create', () => {
   it('updateKit перезаписывает кит и определяет стек', () => {
     const dest = join(root, 'My Site')
     writeFileSync(join(dest, 'kit/js/core/math.js'), '// испорчено')
-    updateKit({ target: dest, log: quiet })
+    // Старый проект: нет пакетов, которые нужны новой версии кита; gsap — своя версия.
+    const pkgPath = join(dest, 'package.json')
+    const old = JSON.parse(readFileSync(pkgPath, 'utf8'))
+    delete old.devDependencies.htmlparser2
+    old.dependencies.gsap = '^3.0.0'
+    writeFileSync(pkgPath, JSON.stringify(old))
+    const logs = []
+    updateKit({ target: dest, log: (m) => logs.push(m) })
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
+    expect(pkg.devDependencies).toHaveProperty('htmlparser2')
+    expect(pkg.dependencies.gsap).toBe('^3.0.0') // версии проекта не трогаем
+    expect(logs.join('\n')).toMatch(/htmlparser2@.*npm install/s)
     expect(readFileSync(join(dest, 'kit/js/core/math.js'), 'utf8')).toContain('export const clamp')
     expect(existsSync(join(dest, 'kit/react'))).toBe(false)
     expect(() => updateKit({ target: root, log: quiet })).toThrow(/не проект/)

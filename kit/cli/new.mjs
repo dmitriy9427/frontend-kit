@@ -15,6 +15,7 @@
  */
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
+import process from 'node:process' // явно: файл проверяется линтером и в старых проектах
 import { fileURLToPath } from 'node:url'
 
 const NAME = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/
@@ -141,7 +142,7 @@ export default function ${camel(name.replace(/^\d+-/, ''))}({ ctx }) {
  * @param {{ kind: string, name: string, root?: string, js?: boolean, title?: string, log?: (s: string) => void }} o
  * @returns {string[]} Созданные файлы.
  */
-export function generate({ kind, name, root = '.', js = false, title, log = console.log }) {
+export function generate({ kind, name, root = '.', js = false, title, log = console.info }) {
   // У плагина может быть числовой префикс порядка: 03-metrika.
   const checked = kind === 'plugin' ? (name ?? '').replace(/^\d+-/, '') : name
   if (!NAME.test(checked ?? ''))
@@ -197,7 +198,7 @@ function main() {
   const positional = argv.filter((a, i) => !a.startsWith('--') && argv[i - 1] !== '--root')
   const [kind, name, title] = positional
   if (!kind || flag('help')) {
-    console.log(
+    console.info(
       'npm run new -- component <имя> [--js] | module <имя> | plugin <имя> | page <имя> ["Заголовок"]   [--root папка]',
     )
     return

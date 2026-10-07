@@ -270,17 +270,42 @@ export function createProject({ target, stack, name = packageName(target), log =
   return dest
 }
 
-/** Обновить kit/ в существующем проекте (перезаписывает файлы кита). */
+/**
+ * Добавить в package.json проекта пакеты, которые нужны новой версии кита.
+ * Существующие версии НЕ меняются (проект мог обновить их сам). Возвращает добавленные.
+ * @param {{ pkg: any, stack: string }} o
+ */
+export function addMissingPackages({ pkg, stack }) {
+  const wanted = buildPackageJson({ name: pkg.name ?? 'project', stack })
+  const added = []
+  for (const field of ['dependencies', 'devDependencies']) {
+    const have = { ...pkg.dependencies, ...pkg.devDependencies }
+    for (const [name, version] of Object.entries(wanted[field])) {
+      if (have[name]) continue
+      pkg[field] = Object.fromEntries(
+        Object.entries({ ...pkg[field], [name]: version }).sort(([a], [b]) => a.localeCompare(b)),
+      )
+      added.push(`${name}@${version}`)
+    }
+  }
+  return added
+}
+
+/** Обновить kit/ в существующем проекте (перезаписывает файлы кита, добавляет недостающие пакеты). */
 export function updateKit({ target, log = console.log }) {
   const dest = resolve(target)
-  const pkg = join(dest, 'package.json')
-  if (!existsSync(join(dest, 'kit')) || !existsSync(pkg))
+  const pkgPath = join(dest, 'package.json')
+  if (!existsSync(join(dest, 'kit')) || !existsSync(pkgPath))
     throw new Error(`${dest} — не проект из шаблона (нет kit/ или package.json)`)
-  const deps = readJson(pkg).dependencies ?? {}
+  const pkg = readJson(pkgPath)
+  const deps = pkg.dependencies ?? {}
   const stack = deps.react ? 'react' : deps.astro ? 'astro' : 'vanilla'
   cpSync(join(TEMPLATE, 'kit'), join(dest, 'kit'), { recursive: true, filter: kitFilter(stack) })
   cpSync(join(TEMPLATE, 'test'), join(dest, 'test'), { recursive: true, filter: notSkipped })
+  const added = addMissingPackages({ pkg, stack })
+  if (added.length) writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`)
   log(`✓ Кит обновлён в ${dest} (${stack}). Посмотрите изменения: git diff kit/`)
+  if (added.length) log(`  + пакеты для новой версии кита: ${added.join(', ')}\n  Выполните npm install`)
   return dest
 }
 
