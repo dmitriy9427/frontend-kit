@@ -105,8 +105,22 @@ function Hero() {
 `useRouteReset` сбрасывает прокрутку и пересчитывает ScrollTrigger при смене адреса.
 Хостинг должен отдавать `index.html` на любой путь — [deploy.md](deploy.md).
 
-## Перенос в Next.js / Astro
+## Разметка, которую рисует не ваш React-код
 
-Скопируйте `kit/` в проект, alias `kit` → папка кита, SCSS `loadPaths` → родитель `kit` и
-`src/styles`. В Next.js компоненты с `useModule` — с `'use client'`. В Astro — React-острова
-(`client:visible`) или обычный `<script>` с `createApp` для статических страниц.
+HTML из CMS (`dangerouslySetInnerHTML`), MDX, серверные компоненты Next.js — там нет `ref` для
+`useModule`. Пишите обычный `data-module` и добавьте один раз `<KitRuntime />`:
+
+```jsx
+import { KitRuntime } from 'kit/react/index.js'
+
+;<KitProvider smooth>
+  <App />
+  <KitRuntime smooth={false} /> {/* плавный скролл уже включил KitProvider */}
+</KitProvider>
+```
+
+Модули запустятся после гидрации, а при смене страницы — перезапустятся сами.
+
+## Next.js, Astro, Vue
+
+Пошагово, с проверенным примером для Next.js 16 — [frameworks.md](frameworks.md).

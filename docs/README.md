@@ -5,24 +5,27 @@
 
 ## С чего начать
 
-| Документ                                 | Когда читать                                                                       |
-| ---------------------------------------- | ---------------------------------------------------------------------------------- |
-| [getting-started.md](getting-started.md) | Создать проект, запустить, сделать первую страницу и первый модуль                 |
-| [structure.md](structure.md)             | Где что лежит, что можно править, как обновлять кит                                |
-| [components.md](components.md)           | **Компоненты вёрстки**: папка = html + scss + js, props, слоты, циклы, данные      |
-| [modules.md](modules.md)                 | Модули (аккордеон, табы, модалка…), свой модуль, **связь модулей** (`ctx.modules`) |
-| [plugins.md](plugins.md)                 | GSAP в одном месте, плагины сайта (аналитика…), вложенная прокрутка и Lenis        |
-| [icons.md](icons.md)                     | SVG-иконки: спрайт, `<x-icon>`, размеры и цвета                                    |
-| [forms.md](forms.md)                     | Формы: схемы проверки, режимы, маски, файлы, ошибки с сервера                      |
-| [styles.md](styles.md)                   | SCSS: настройки проекта, функции, миксины, брейкпоинты, тёмная тема                |
-| [react.md](react.md)                     | React-стартер: `useModule`, `KitProvider`, хуки, подводные камни                   |
-| [i18n.md](i18n.md)                       | Языки: переводы, склонения, тексты кита, мультиязычный сайт на Astro               |
-| [typescript.md](typescript.md)           | TypeScript: проверка JSDoc, стартер react-ts, Astro                                |
-| [devtools.md](devtools.md)               | Dev-панель, Vite-плагины (include, страницы, мок-API, защита прода)                |
-| [testing.md](testing.md)                 | Как устроены тесты и как писать свои                                               |
-| [deploy.md](deploy.md)                   | Сборка, подпапки, SPA на хостинге, кеширование                                     |
-| [checklist.md](checklist.md)             | Чек-лист перед сдачей проекта заказчику                                            |
-| [troubleshooting.md](troubleshooting.md) | **Частые баги: симптом → причина → решение**                                       |
+| Документ                                     | Когда читать                                                                       |
+| -------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [getting-started.md](getting-started.md)     | Создать проект, запустить, сделать первую страницу и первый модуль                 |
+| [create-and-update.md](create-and-update.md) | **`npm run create` подробно, обновление кита в проектах, обновление библиотек**    |
+| [frameworks.md](frameworks.md)               | **Кит в vanilla, React, Next.js, Astro, CMS, Vue** — где работает `data-module`    |
+| [libraries.md](libraries.md)                 | Все библиотеки: зачем, где используются, когда грузятся, чем заменены лишние       |
+| [structure.md](structure.md)                 | Где что лежит, что можно править, как обновлять кит                                |
+| [components.md](components.md)               | **Компоненты вёрстки**: папка = html + scss + js, props, слоты, циклы, данные      |
+| [modules.md](modules.md)                     | Модули (аккордеон, табы, модалка…), свой модуль, **связь модулей** (`ctx.modules`) |
+| [plugins.md](plugins.md)                     | GSAP в одном месте, плагины сайта (аналитика…), вложенная прокрутка и Lenis        |
+| [icons.md](icons.md)                         | SVG-иконки: спрайт, `<x-icon>`, размеры и цвета                                    |
+| [forms.md](forms.md)                         | Формы: схемы проверки, режимы, маски, файлы, ошибки с сервера                      |
+| [styles.md](styles.md)                       | SCSS: настройки проекта, функции, миксины, брейкпоинты, тёмная тема                |
+| [react.md](react.md)                         | React-стартер: `useModule`, `KitProvider`, хуки, подводные камни                   |
+| [i18n.md](i18n.md)                           | Языки: переводы, склонения, тексты кита, мультиязычный сайт на Astro               |
+| [typescript.md](typescript.md)               | TypeScript: проверка JSDoc, стартер react-ts, Astro                                |
+| [devtools.md](devtools.md)                   | Dev-панель, Vite-плагины (include, страницы, мок-API, защита прода)                |
+| [testing.md](testing.md)                     | Как устроены тесты и как писать свои                                               |
+| [deploy.md](deploy.md)                       | Сборка, подпапки, SPA на хостинге, кеширование                                     |
+| [checklist.md](checklist.md)                 | Чек-лист перед сдачей проекта заказчику                                            |
+| [troubleshooting.md](troubleshooting.md)     | **Частые баги: симптом → причина → решение**                                       |
 
 ## Документация рядом с кодом
 

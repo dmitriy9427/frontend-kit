@@ -15,6 +15,7 @@ import {
 } from './index.js'
 import { Flip } from 'gsap/Flip'
 import accordion from '../js/modules/accordion/index.js'
+import { KitRuntime } from './KitRuntime.jsx'
 import { lazy } from '../js/core/registry.js'
 
 afterEach(cleanup)
@@ -197,5 +198,26 @@ describe('без «плясок» вёрстки', () => {
     )
     expect(box.dataset.open).toBe('true')
     expect(box.hasAttribute('inert')).toBe(false)
+  })
+})
+
+describe('KitRuntime', () => {
+  it('запускает модули по data-module в любой разметке и останавливает при размонтировании (StrictMode)', async () => {
+    const destroy = vi.fn()
+    const started = vi.fn(() => ({ destroy }))
+    document.body.insertAdjacentHTML('beforeend', '<div id="server-html" data-module="probe"></div>')
+    const { unmount } = render(
+      <StrictMode>
+        <KitRuntime modules={{ probe: started }} smooth={false} />
+      </StrictMode>,
+    )
+    await vi.waitFor(() => expect(started).toHaveBeenCalled())
+    // Подгруженная позже разметка (клиентский переход) запускается сама.
+    document.body.insertAdjacentHTML('beforeend', '<div id="next-page" data-module="probe"></div>')
+    await vi.waitFor(() => expect(started.mock.calls.some(([el]) => el.id === 'next-page')).toBe(true))
+    unmount()
+    await vi.waitFor(() => expect(destroy).toHaveBeenCalled())
+    document.getElementById('server-html').remove()
+    document.getElementById('next-page').remove()
   })
 })

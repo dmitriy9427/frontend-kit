@@ -1,5 +1,5 @@
 [
-  { "value": 36, "label": "модулей" },
+  { "value": 39, "label": "модулей" },
   { "value": 200, "suffix": "+", "label": "тестов" },
   { "value": 100, "suffix": "%", "label": "вёрстки по БЭМ" }
 ]
