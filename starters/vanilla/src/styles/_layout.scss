@@ -24,8 +24,14 @@
 .nav__link {
   text-decoration: none;
 
-  &[aria-current='page'] {
+  &[aria-current='page'],
+  &.is-active {
     color: var(--color-accent);
+  }
+
+  // На экране секция-якорь (scroll-spy) — подсвечен её пункт, а не «Главная».
+  .nav:has(.is-active) &[aria-current='page'] {
+    color: inherit;
   }
 
   @include hover {
@@ -57,6 +63,14 @@
   flex-wrap: wrap;
   gap: space(4);
   justify-content: space-between;
+}
+
+// Кнопка, которая выглядит как соседние ссылки («Настройки cookie»).
+.footer__link {
+  @include reset-button;
+
+  color: inherit;
+  text-decoration: underline;
 }
 
 .card {

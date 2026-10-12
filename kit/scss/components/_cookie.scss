@@ -1,0 +1,109 @@
+// Баннер согласия на cookies (модуль cookie-consent).
+// Вид меняется переменными — без переписывания селекторов:
+//   .cookie { --cookie-width: 100%; --cookie-radius: 0; --cookie-inset: 0; }  ← полоса во всю ширину
+@use '../abstracts' as *;
+
+.cookie {
+  --cookie-width: #{rem(440px)};
+  --cookie-inset: #{space(4)};
+  --cookie-padding: #{space(5)};
+  --cookie-gap: #{space(4)};
+  --cookie-radius: #{radius('lg')};
+  --cookie-bg: var(--color-bg);
+  --cookie-color: var(--color-text);
+  --cookie-border: var(--color-border);
+  --cookie-shadow: var(--shadow-lg);
+
+  position: fixed;
+  right: var(--cookie-inset);
+  bottom: var(--cookie-inset);
+  left: var(--cookie-inset);
+  z-index: z('cookie');
+  display: flex;
+  flex-direction: column;
+  gap: var(--cookie-gap);
+  // Длинный список категорий на низком экране прокручивается внутри баннера.
+  max-height: calc(100svh - 2 * var(--cookie-inset));
+  padding: var(--cookie-padding);
+  overflow: auto;
+  overscroll-behavior: contain;
+  font-size: rem(14px);
+  color: var(--cookie-color);
+  background: var(--cookie-bg);
+  border: 1px solid var(--cookie-border);
+  border-radius: var(--cookie-radius);
+  box-shadow: var(--cookie-shadow);
+
+  @include motion {
+    animation: kit-cookie-in var(--duration) var(--ease);
+  }
+
+  @include up('md') {
+    right: auto;
+    width: min(var(--cookie-width), calc(100% - 2 * var(--cookie-inset)));
+  }
+
+  // Фокус сюда переводит модуль при открытии из подвала — рамка на всём блоке не нужна.
+  &:focus {
+    outline: none;
+  }
+}
+
+.cookie__text a {
+  text-decoration: underline;
+}
+
+.cookie__panel {
+  display: flex;
+  flex-direction: column;
+  gap: space(3);
+  padding-top: var(--cookie-gap);
+  border-top: 1px solid var(--cookie-border);
+}
+
+.cookie__option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: space(1) space(3);
+  align-items: start;
+  cursor: pointer;
+
+  input {
+    width: rem(18px);
+    height: rem(18px);
+    margin-top: 2px;
+    accent-color: var(--color-accent);
+  }
+
+  &:has(input:disabled) {
+    cursor: default;
+  }
+}
+
+.cookie__option-title {
+  font-weight: 600;
+}
+
+.cookie__option-hint {
+  grid-column: 2;
+  color: var(--color-muted);
+}
+
+.cookie__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: space(2);
+
+  // Кнопки одинаковой ширины: «принять» и «отказаться» равноправны —
+  // прятать отказ мелкой ссылкой нельзя (так требует и закон, и совесть).
+  > * {
+    flex: 1 1 auto;
+  }
+}
+
+@keyframes kit-cookie-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}

@@ -257,6 +257,52 @@
   }
 }
 
+// Листание галереи: стрелки по бокам и счётчик «2 / 7».
+.lightbox__nav {
+  @include reset-button;
+
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: rem(48px);
+  height: rem(48px);
+  font-size: rem(28px);
+  line-height: 1;
+  color: #fff;
+  border: 1px solid rgb(255 255 255 / 30%);
+  border-radius: 50%;
+  translate: 0 -50%;
+
+  @include hover {
+    color: #000;
+    background: #fff;
+  }
+
+  &--prev {
+    left: space(5);
+  }
+
+  &--next {
+    right: space(5);
+  }
+
+  // На телефоне стрелки закрывали бы фото — там листают свайпом.
+  @include down('md') {
+    display: none;
+  }
+}
+
+.lightbox__counter {
+  position: absolute;
+  top: space(5);
+  left: space(5);
+  margin: 0;
+  font-size: rem(14px);
+  color: #fff;
+  opacity: 0.7;
+}
+
 // ─── hscroll ────────────────────────────────────────────────────────────────
 .hscroll {
   --hscroll-card: #{rem(420px)};

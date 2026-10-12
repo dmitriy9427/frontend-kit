@@ -37,6 +37,16 @@
  * - иначе — обычная отправка браузером, если всё верно.
  * События на <form>: form:invalid, form:submit (можно отменить), form:success, form:error.
  *
+ * ─── Защита от спам-ботов (antispam) ────────────────────────────────────────
+ * data-form-antispam добавляет в форму две ловушки — без капчи и без неудобств людям:
+ * - «медовая» ловушка: поле, скрытое от людей (и от скринридера). Бот заполняет
+ *   все поля подряд — заполнил ловушку, значит бот;
+ * - время: человек не заполнит форму быстрее пары секунд (antispamDelay), бот — да.
+ * Пойманной заявке показывается обычное «Спасибо» (боту незачем знать, что его
+ * раскусили), но запрос не уходит; событие form:spam. На сервер с каждой заявкой
+ * уходят поле-ловушка и form_time (мс от показа формы до отправки) — проверяйте
+ * их и там: бот может слать запросы мимо страницы.
+ *
  * ─── Баги, закрытые здесь ───────────────────────────────────────────────────
  * 1. Двойная отправка двойным кликом — кнопка блокируется на время запроса.
  * 2. После reset() остаются красные поля — чистим; кастомные поля (селекты,
@@ -73,6 +83,12 @@ const DEFAULTS = {
   failure: '',
   /** Текст в статусе, если есть ошибки в полях. */
   invalid: '',
+  /** Ловушки для спам-ботов: скрытое поле + минимальное время заполнения. */
+  antispam: false,
+  /** Имя поля-ловушки. Должно выглядеть настоящим: бот не заполняет поля с именем «honeypot». */
+  antispamField: 'website',
+  /** Быстрее этого времени (мс) форму заполняет только бот. */
+  antispamDelay: 2000,
 }
 
 const MODES = ['onTouched', 'onBlur', 'onChange', 'onSubmit', 'all']
@@ -148,7 +164,12 @@ export default function form(el, ctx = {}) {
   // ─── Поля ────────────────────────────────────────────────────────────────
   const elements = () =>
     Array.from(el.elements).filter(
-      (f) => f.name && !f.disabled && !SKIP_TYPES.includes(f.type) && f.tagName !== 'FIELDSET',
+      (f) =>
+        f.name &&
+        !f.disabled &&
+        !SKIP_TYPES.includes(f.type) &&
+        f.tagName !== 'FIELDSET' &&
+        !('formIgnore' in f.dataset), // служебные поля (ловушка антиспама)
     )
   const keyOf = (field) => field.name.replace(/\[\]$/, '')
   /** Имена полей в порядке DOM (группа чекбоксов — одно имя). */
@@ -342,6 +363,35 @@ export default function form(el, ctx = {}) {
     })
   })
 
+  // ─── Антиспам ───────────────────────────────────────────────────────────
+  let shownAt = Date.now()
+  /** @type {HTMLInputElement | null} */
+  let trap = null
+  /** @type {HTMLInputElement | null} */
+  let timeField = null
+  if (options.antispam) {
+    // Не display: none и не type="hidden": такие поля боты пропускают. Поле «настоящее»,
+    // но вынесено за экран, недоступно с клавиатуры и скрыто от скринридера.
+    const wrap = document.createElement('div')
+    wrap.setAttribute('aria-hidden', 'true')
+    wrap.style.cssText = 'position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden'
+    trap = document.createElement('input')
+    trap.type = 'text'
+    trap.name = options.antispamField
+    trap.tabIndex = -1
+    trap.autocomplete = 'off'
+    // Поле не участвует в проверке и в данных схемы — только уходит на сервер.
+    trap.dataset.formIgnore = ''
+    timeField = document.createElement('input')
+    timeField.type = 'hidden'
+    timeField.name = 'form_time'
+    wrap.append(trap, timeField)
+    el.append(wrap)
+    d.add(() => wrap.remove())
+  }
+  /** Похоже на бота: заполнена ловушка или форма отправлена слишком быстро. */
+  const isSpam = () => Boolean(trap) && (trap.value !== '' || Date.now() - shownAt < options.antispamDelay)
+
   // ─── Отправка ───────────────────────────────────────────────────────────
   function lock(on) {
     busy = on
@@ -378,6 +428,14 @@ export default function form(el, ctx = {}) {
       new CustomEvent('form:submit', { bubbles: true, cancelable: true, detail: { data: result.data } }),
     )
     if (!proceed) return event.preventDefault()
+    if (timeField) timeField.value = String(Date.now() - shownAt)
+    if (isSpam()) {
+      // Боту — то же «Спасибо», что и человеку, но заявка никуда не уходит.
+      event.preventDefault()
+      el.dispatchEvent(new CustomEvent('form:spam', { bubbles: true }))
+      setStatus(options.success || t('kit.form.success'), 'success')
+      return
+    }
     if (!options.ajax && !onSubmit) return // обычная отправка браузером
     event.preventDefault()
     if (busy) return
@@ -391,6 +449,7 @@ export default function form(el, ctx = {}) {
         keepStatus = true
         el.reset()
       }
+      shownAt = Date.now() // следующая заявка из той же формы — новый отсчёт
       if (successBox) successBox.hidden = false
       setStatus(payload.message ?? (options.success || t('kit.form.success')), 'success')
     } catch (error) {

@@ -12,6 +12,7 @@
  * - путь: /api/news/latest → mocks/news/latest.js;
  * - экспорт по методу (GET, POST, PUT, PATCH, DELETE) или default — на всё;
  * - вернуть можно { status, body, headers } или просто данные (тогда 200);
+ * - body-строка отдаётся как HTML (text/html), остальное — как JSON;
  * - query (?page=2) — в аргументе { query }, тело JSON/формы — в { body };
  * - задержка ответа (delay) имитирует медленную сеть: видно спиннеры, ловятся
  *   гонки и двойные клики;
@@ -73,9 +74,11 @@ export function mockApi({ dir = 'mocks', prefix = '/api', delay = 400 } = {}) {
         const file = resolve(root, `${name}.js`)
         const send = (status, body, headers = {}) => {
           res.statusCode = status
-          res.setHeader('Content-Type', 'application/json; charset=utf-8')
+          // Строка — готовый HTML (фрагмент списка для «Показать ещё»), всё остальное — JSON.
+          const html = typeof body === 'string'
+          res.setHeader('Content-Type', html ? 'text/html; charset=utf-8' : 'application/json; charset=utf-8')
           for (const [k, v] of Object.entries(headers)) res.setHeader(k, v)
-          res.end(JSON.stringify(body))
+          res.end(html ? body : JSON.stringify(body))
         }
         if (!file.startsWith(root + sep) || !existsSync(file)) {
           return send(404, { message: `[mock-api] нет файла ${dir}/${name}.js для ${req.method} ${url.pathname}` })

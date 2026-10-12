@@ -1,0 +1,25 @@
+<!--
+  Рейтинг звёздами (модуль кита rating).
+    <x-rating value="4.3" />                       показ оценки (можно дробной)
+    <x-rating name="score" />                      выбор оценки в форме — группа radio
+    <x-rating name="score" value="4" clearable label="Оцените работу" max="10" />
+  name — есть: выбор (значение уходит с формой, проверяется схемой), нет: показ.
+  clearable — повторный клик по выбранной звезде снимает оценку.
+  label — подпись группы для скринридера (или aria-labelledby на самом компоненте).
+  Вид — переменные --rating-size, --rating-color, --rating-icon (kit/scss/components/_rating.scss):
+    <x-rating value="5" style="--rating-size: 32px" />
+-->
+<fieldset x-if="name" class="rating" data-module="rating" :data-rating-clearable="Boolean(clearable)">
+  <legend x-if="label" class="visually-hidden">{{ label }}</legend>
+  <label x-for="n of Number(max ?? 5)" class="rating__star">
+    <input type="radio" :name="name" :value="n" :checked="n === Number(value)" />
+  </label>
+  <span class="rating__output" data-rating-output></span>
+</fieldset>
+<span
+  x-else
+  class="rating rating--readonly"
+  data-module="rating"
+  :data-rating-value="value ?? 0"
+  :data-rating-max="max ?? 5"
+></span>

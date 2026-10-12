@@ -2,12 +2,13 @@
   Шапка. Пункты меню — из src/data/site.json (site.nav).
   Активный пункт подсвечивается сам: ссылке на текущую страницу плагин
   ставит aria-current="page" (стили — [aria-current='page']).
+  Ссылки-якоря (#features) подсвечивает модуль scroll-spy, пока их секция на экране.
 -->
 <a class="skip-link" href="#main">Перейти к содержимому</a>
 <header class="header" data-module="sticky-header">
   <div class="header__inner">
     <a class="logo" href="%BASE_URL%">Логотип</a>
-    <nav id="site-menu" class="nav mobile-menu" aria-label="Основное меню" data-lenis-prevent>
+    <nav id="site-menu" class="nav mobile-menu" aria-label="Основное меню" data-module="scroll-spy" data-lenis-prevent>
       <ul class="nav__list">
         <li x-for="link of site.nav"><a class="nav__link" href="%BASE_URL%{{ link.href }}">{{ link.label }}</a></li>
       </ul>

@@ -1,7 +1,7 @@
 ---
 /**
  * Общий каркас страницы: <head> (SEO, hreflang, Open Graph), шапка, подвал,
- * модалка, запуск модулей кита.
+ * модалка, баннер cookies, запуск модулей кита.
  *
  *   <Base title="…" description="…"> …содержимое… </Base>
  */
@@ -9,6 +9,7 @@ import '../styles/main.scss'
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
 import CallbackDialog from '../components/CallbackDialog.astro'
+import CookieBanner from '../components/CookieBanner.astro'
 import { LOCALES, localePath, stripLocale, useTranslations, type Locale } from '../i18n/ui'
 
 interface Props {
@@ -60,6 +61,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     </main>
     <Footer />
     <CallbackDialog />
+    <CookieBanner />
     <script>
       import '../scripts/app'
     </script>

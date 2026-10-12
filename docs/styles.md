@@ -104,6 +104,22 @@
 `.cover`, `.line-clamp-2/3`, `.visually-hidden`, `.skip-link`, `.prose` (текст из CMS),
 `.h1…h4`, `.lead`, `.small`, `.muted`. Кнопки: `.btn`, `.btn--secondary`, `.btn--ghost`, `.btn--sm/lg`.
 
+## Состояния загрузки
+
+**Скелетон** — серая заглушка с бликом вместо «прыгающего» контента, пока данные грузятся:
+
+```html
+<article aria-busy="true">
+  <div class="skeleton" style="height: 200px"></div>
+  <p class="skeleton skeleton--text"></p>
+  <p class="skeleton skeleton--text"></p>
+  <span class="skeleton skeleton--circle" style="width: 48px"></span>
+</article>
+```
+
+**Кнопка с `aria-busy="true"`** показывает крутилку вместо текста, не меняя ширины. Модули `form`
+и `load-more` ставят атрибут сами; в своём коде — `button.setAttribute('aria-busy', 'true')`.
+
 ## Именование — БЭМ
 
 `.block`, `.block__element`, `.block--modifier`; состояния — `.is-open`, `.is-active`

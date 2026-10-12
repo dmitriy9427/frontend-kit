@@ -1,11 +1,16 @@
 ---
-import { useTranslations } from '../i18n/ui'
+import ru from 'kit/js/i18n/ru.js'
+import en from 'kit/js/i18n/en.js'
+import { useTranslations, type Locale } from '../i18n/ui'
 const t = useTranslations(Astro.currentLocale)
+const cookies = { ru, en }[(Astro.currentLocale ?? 'ru') as Locale].kit.cookies
 ---
 
 <footer class="footer">
   <div class="container footer__inner">
     <p>© {new Date().getFullYear()} · {t('footer.rights')}</p>
+    {/* Открывает баннер cookies с текущим выбором */}
+    <button class="footer__link" type="button" data-cookie-open>{cookies.open}</button>
   </div>
 </footer>
 <button class="scroll-top" data-module="scroll-top" aria-label="↑">↑</button>

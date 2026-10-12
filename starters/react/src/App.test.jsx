@@ -27,6 +27,8 @@ describe('App', () => {
     await renderAt('/')
     expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('Компоненты')
     expect(document.getElementById('callback')).toBeTruthy()
+    // Выбора ещё нет — баннер cookies показан.
+    expect(document.querySelector('.cookie').hidden).toBe(false)
     expect(document.querySelector('.burger').getAttribute('aria-controls')).toBe('site-menu')
   })
 

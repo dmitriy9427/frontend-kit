@@ -59,6 +59,14 @@
   justify-content: space-between;
 }
 
+// Кнопка, которая выглядит как соседние ссылки («Настройки cookie»).
+.footer__link {
+  @include reset-button;
+
+  color: inherit;
+  text-decoration: underline;
+}
+
 .card {
   padding: space(6);
   list-style: none;

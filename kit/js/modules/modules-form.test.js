@@ -1,6 +1,6 @@
 /**
  * Тесты формы и модулей полей: режимы проверки, схема, ошибки сервера,
- * маски, загрузка файлов, пароль, счётчик, степпер, autosize.
+ * маски, загрузка файлов, пароль, счётчик, степпер, autosize, рейтинг.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import form, { messageFor, serverErrors } from './form/index.js'
@@ -10,6 +10,8 @@ import charCounter from './char-counter/index.js'
 import stepper, { stepValue } from './stepper/index.js'
 import autosize from './autosize/index.js'
 import mask from './mask/index.js'
+import rating from './rating/index.js'
+import { resetLocale, setLocale } from '../core/i18n.js'
 import { registerSchema, s } from '../form/index.js'
 import { createCtx, html, tick } from '@test/helpers.js'
 
@@ -265,6 +267,62 @@ describe('form: отправка', () => {
   })
 })
 
+describe('form: защита от спама', () => {
+  const FORM = `<form data-form-ajax data-form-antispam action="/api"><label class="field"><input name="name" value="Иван"></label>
+    <button type="submit">go</button><p data-form-status></p></form>`
+  const ok = () => vi.fn(async () => ({ ok: true, json: async () => ({}) }))
+
+  it('ловушка скрыта от людей и не попадает в проверку и данные схемы', () => {
+    const el = html(FORM)
+    const api = form(el)
+    const trap = el.querySelector('input[name="website"]')
+    expect(trap.tabIndex).toBe(-1)
+    expect(trap.closest('[aria-hidden="true"]')).toBeTruthy()
+    expect(trap.type).toBe('text') // не hidden: такие поля боты пропускают
+    expect(api.validate().success).toBe(true)
+    api.destroy()
+    expect(el.querySelector('input[name="website"]')).toBeNull()
+  })
+
+  it('со схемой: ловушка не мешает проверке и не считается ошибкой', () => {
+    registerSchema('antispam-test', s.object({ name: s.string().min(2) }))
+    const el = html(FORM.replace('data-form-antispam', 'data-form-antispam data-form-schema="antispam-test"'))
+    const api = form(el)
+    expect(api.validate()).toMatchObject({ success: true, data: { name: 'Иван' } })
+    api.destroy()
+  })
+
+  it('слишком быстро или заполнена ловушка — «Спасибо» без запроса; человек — отправка с form_time', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(1_000_000)
+    const fetchMock = ok()
+    vi.stubGlobal('fetch', fetchMock)
+    const el = html(FORM)
+    form(el)
+    const spam = vi.fn()
+    el.addEventListener('form:spam', spam)
+
+    submit(el) // через 0 мс после показа
+    await tick(5)
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(el.querySelector('[data-form-status]').textContent).toMatch(/Спасибо/)
+
+    vi.setSystemTime(1_005_000)
+    el.querySelector('input[name="website"]').value = 'http://spam'
+    submit(el)
+    await tick(5)
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(spam).toHaveBeenCalledTimes(2)
+
+    el.querySelector('input[name="website"]').value = ''
+    submit(el)
+    await tick(5)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(fetchMock.mock.calls[0][1].body.get('form_time')).toBe('5000')
+    vi.useRealTimers()
+  })
+})
+
 describe('модули полей', () => {
   it('mask: на отдельном поле; без маски — ошибка', () => {
     const input = html('<input data-mask="date">')
@@ -403,5 +461,111 @@ describe('модули полей', () => {
     submit(el)
     await tick(10)
     expect(got).toHaveBeenCalled()
+  })
+})
+
+describe('rating', () => {
+  const RATING = (attrs = '') => `
+    <form><fieldset class="rating" ${attrs}>
+      ${[1, 2, 3, 4, 5].map((n) => `<label class="rating__star"><input type="radio" name="score" value="${n}"></label>`).join('')}
+      <span data-rating-output></span>
+    </fieldset></form>`
+  // Настоящий клик мышью: detail = 1 (у «клика» с клавиатуры и у el.click() — 0).
+  const mouseClick = (radio) => {
+    const was = radio.checked
+    radio.checked = true
+    radio.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }))
+    if (!was) radio.dispatchEvent(new Event('change', { bubbles: true }))
+  }
+
+  it('показ: дробная оценка в переменных и подпись для скринридера', () => {
+    const el = html('<span class="rating rating--readonly" data-rating-value="4.3"></span>')
+    const api = rating(el)
+    expect(el.style.getPropertyValue('--rating-value')).toBe('4.3')
+    expect(el.style.getPropertyValue('--rating-max')).toBe('5')
+    expect(el.getAttribute('role')).toBe('img')
+    expect(el.getAttribute('aria-label')).toBe('Оценка 4,3 из 5')
+    api.set(9)
+    expect(el.style.getPropertyValue('--rating-value')).toBe('5') // не больше max
+    setLocale('en')
+    expect(el.getAttribute('aria-label')).toBe('Rated 5 out of 5')
+    resetLocale()
+    api.destroy()
+  })
+
+  it('выбор: подписи звёзд, текст оценки, событие и шина', () => {
+    const root = html(RATING()).firstElementChild
+    const ctx = createCtx()
+    const seen = []
+    ctx.bus.on('rating:change', (payload) => seen.push([payload.name, payload.value]))
+    root.addEventListener('rating:change', (e) => seen.push(e.detail.value))
+    const api = rating(root, ctx)
+    const radios = root.querySelectorAll('input')
+    expect([...radios].map((r) => r.getAttribute('aria-label'))).toEqual([
+      '1 звезда',
+      '2 звезды',
+      '3 звезды',
+      '4 звезды',
+      '5 звёзд',
+    ])
+    expect(api.value).toBe(0)
+    expect(root.querySelector('[data-rating-output]').textContent).toBe('')
+    mouseClick(radios[3])
+    expect(api.value).toBe(4)
+    expect(root.querySelector('[data-rating-output]').textContent).toBe('4 из 5')
+    expect(root.style.getPropertyValue('--rating-value')).toBe('4')
+    expect(seen).toEqual([4, ['score', 4]])
+    // Без clearable повторный клик оценку не снимает.
+    mouseClick(radios[3])
+    expect(api.value).toBe(4)
+    api.destroy()
+  })
+
+  it('своя подпись у звезды не затирается', () => {
+    const root = html(
+      '<fieldset><label><input type="radio" name="s" value="1" aria-label="Плохо"></label><label><input type="radio" name="s" value="2"> Хорошо</label></fieldset>',
+    )
+    rating(root)
+    const [first, second] = root.querySelectorAll('input')
+    expect(first.getAttribute('aria-label')).toBe('Плохо')
+    expect(second.hasAttribute('aria-label')).toBe(false)
+  })
+
+  it('clearable: повторный клик и Delete снимают оценку, клавиатурный «клик» — нет', () => {
+    const root = html(RATING('data-rating-clearable')).firstElementChild
+    const api = rating(root)
+    const radios = root.querySelectorAll('input')
+    const changes = []
+    root.addEventListener('rating:change', (e) => changes.push(e.detail.value))
+    mouseClick(radios[2])
+    radios[2].click() // detail = 0, как у пробела на выбранной звезде
+    expect(api.value).toBe(3)
+    mouseClick(radios[2])
+    expect(api.value).toBe(0)
+    expect(root.classList.contains('is-cleared')).toBe(true) // подсветка наведения погашена
+    expect(new FormData(root.form).get('score')).toBe(null)
+    mouseClick(radios[4])
+    expect(root.classList.contains('is-cleared')).toBe(false)
+    radios[4].dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete', bubbles: true }))
+    expect(api.value).toBe(0)
+    expect(changes).toEqual([3, 0, 5, 0])
+  })
+
+  it('set/reset из кода шлют change (форма узнаёт); сброс формы обновляет текст', async () => {
+    const root = html(RATING()).firstElementChild
+    const api = rating(root)
+    const onChange = vi.fn()
+    root.form.addEventListener('change', onChange)
+    api.set(2)
+    api.set(2)
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(new FormData(root.form).get('score')).toBe('2')
+    api.reset()
+    expect(api.value).toBe(0)
+    api.set(5)
+    root.form.reset()
+    await tick(5)
+    expect(root.querySelector('[data-rating-output]').textContent).toBe('')
+    api.destroy()
   })
 })

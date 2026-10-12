@@ -15,6 +15,7 @@
 | `url.js`                             | состояние в адресе: `getParam/setParam`, `getHash/setHash`                                        |
 | `gsap.js`                            | GSAP + ScrollTrigger с настройками против «прыжков» на мобилке                                    |
 | `math.js`, `timing.js`, `storage.js` | clamp/lerp/damp/wrap; debounce/throttle/rafThrottle; безопасный localStorage                      |
+| `consent.js`                         | согласие на cookies: `hasConsent`, `whenConsent`, включение отложенных скриптов                   |
 
 Импортируйте конкретные файлы (`kit/js/core/lifecycle.js`), а не `index.js`, — в сборку попадёт
 только нужное. Тесты: `core.test.js`, `registry.test.js`, `modules.test.js`.

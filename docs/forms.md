@@ -111,6 +111,83 @@ Laravel `{ "email": ["Занят"] }`). Из `onSubmit` — выбросите �
 form.addEventListener('form:success', () => ym(12345, 'reachGoal', 'callback')) // цель Метрики
 ```
 
+## Защита от спама
+
+`data-form-antispam` — две ловушки для ботов, без капчи и без неудобств людям:
+
+```html
+<form data-module="form" data-form-ajax data-form-antispam action="/api/callback" method="post">…</form>
+```
+
+- **Поле-ловушка** (`website`, имя меняется `data-form-antispam-field`): скрыто от людей и
+  скринридера. Бот заполняет все поля подряд — заполнил ловушку, значит бот.
+- **Время**: быстрее 2 секунд (`data-form-antispam-delay="2000"`) форму отправляет только бот.
+
+Пойманной заявке показывается обычное «Спасибо», но запрос не уходит (событие `form:spam`).
+Бот может слать запросы и мимо страницы, поэтому **проверяйте то же на сервере**: с каждой
+заявкой приходят поле-ловушка и `form_time` (мс от показа формы до отправки).
+
+### Куда отправлять заявки
+
+Токен бота и пароль от почты нельзя класть во фронтенд — их увидит любой посетитель. Нужен
+маленький обработчик на сервере. Два готовых варианта — скопируйте и впишите свои данные.
+
+**PHP → Telegram** (любой хостинг: Beget, Timeweb, reg.ru) — `api/callback.php`,
+у формы `action="/api/callback.php"`:
+
+```php
+<?php
+header('Content-Type: application/json; charset=utf-8');
+const BOT_TOKEN = '123456:ABC…';   // токен от @BotFather
+const CHAT_ID   = '-1001234567890'; // куда слать (узнать: @userinfobot)
+
+$name  = trim($_POST['name']  ?? '');
+$phone = trim($_POST['phone'] ?? '');
+
+// Антиспам: ловушка заполнена или форма отправлена быстрее 2 секунд — молча «успех».
+if (($_POST['website'] ?? '') !== '' || (int)($_POST['form_time'] ?? 0) < 2000) {
+  exit(json_encode(['message' => 'Спасибо!']));
+}
+if ($phone === '') {
+  http_response_code(422);
+  exit(json_encode(['errors' => ['phone' => 'Укажите телефон']]));
+}
+
+$text = "Заявка с сайта\nИмя: $name\nТелефон: $phone";
+$ok = @file_get_contents('https://api.telegram.org/bot' . BOT_TOKEN . '/sendMessage?' . http_build_query([
+  'chat_id' => CHAT_ID,
+  'text'    => $text,
+]));
+
+if ($ok === false) {
+  http_response_code(502);
+  exit(json_encode(['message' => 'Не удалось отправить. Позвоните нам, пожалуйста.']));
+}
+echo json_encode(['message' => 'Спасибо! Перезвоним в течение часа.']);
+```
+
+**Serverless-функция** (Vercel / Netlify / Cloudflare) — `api/callback.js`:
+
+```js
+export default async function handler(request) {
+  const form = await request.formData()
+  if (form.get('website') || Number(form.get('form_time')) < 2000) return Response.json({ message: 'Спасибо!' })
+  if (!form.get('phone')) return Response.json({ errors: { phone: 'Укажите телефон' } }, { status: 422 })
+
+  const text = `Заявка с сайта\nИмя: ${form.get('name')}\nТелефон: ${form.get('phone')}`
+  const response = await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: process.env.CHAT_ID, text }),
+  })
+  if (!response.ok) return Response.json({ message: 'Не удалось отправить' }, { status: 502 })
+  return Response.json({ message: 'Спасибо! Перезвоним в течение часа.' })
+}
+```
+
+Формат ответов тот же, что у мока `mocks/callback.js`: `{ message }` при успехе,
+`{ errors: { поле: 'текст' } }` с кодом 422 — ошибки появятся под полями.
+
 ## Маски
 
 | `data-mask`                  | Вид                | Особенности                                                         |

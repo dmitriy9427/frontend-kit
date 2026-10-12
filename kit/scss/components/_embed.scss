@@ -1,0 +1,96 @@
+// Видео по клику (модуль embed) и карта (модуль map): блок держит пропорции
+// до загрузки — вёрстка не «прыгает».
+//   .embed { --embed-ratio: 4 / 3; }   .map { --map-height: 480px; }
+@use '../abstracts' as *;
+
+// ─── embed ──────────────────────────────────────────────────────────────────
+.embed {
+  --embed-ratio: 16 / 9;
+  --embed-play: #{rem(72px)};
+
+  position: relative;
+  display: block;
+  aspect-ratio: var(--embed-ratio);
+  overflow: hidden;
+  cursor: pointer;
+  background: #000;
+  border-radius: radius('lg');
+
+  &.is-playing {
+    cursor: default;
+  }
+}
+
+.embed__poster {
+  @include cover;
+  @include object-cover;
+
+  transition: scale 0.6s var(--ease);
+
+  .embed:hover & {
+    @media (hover: hover) and (pointer: fine) {
+      scale: 1.03;
+    }
+  }
+}
+
+.embed__play {
+  @include reset-button;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--embed-play);
+  height: var(--embed-play);
+  background: var(--color-accent)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M9 6.5v11l9-5.5z'/%3E%3C/svg%3E")
+    center / 50% no-repeat;
+  border-radius: 50%;
+  box-shadow: var(--shadow-md);
+  translate: -50% -50%;
+
+  @include focus-ring(4px);
+
+  .embed.is-playing & {
+    display: none;
+  }
+}
+
+.embed__frame {
+  @include cover;
+
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.embed.is-playing .embed__poster {
+  display: none;
+}
+
+// ─── map ────────────────────────────────────────────────────────────────────
+.map {
+  --map-height: #{rem(420px)};
+
+  position: relative;
+  display: grid;
+  place-content: center;
+  gap: space(2);
+  justify-items: center;
+  min-height: var(--map-height);
+  padding: space(6);
+  overflow: hidden;
+  text-align: center;
+  background: var(--color-surface);
+  border-radius: radius('lg');
+
+  // Метки — данные для карты, а не содержимое блока.
+  [data-map-marker] {
+    display: none;
+  }
+}
+
+// Сама карта — слоем поверх запасного содержимого (адрес, ссылка).
+.map__canvas {
+  @include cover;
+}

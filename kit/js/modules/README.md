@@ -6,5 +6,5 @@
 Каталог с разметкой и настройками — [docs/modules.md](../../../docs/modules.md).
 Свой модуль — в `src/modules/` проекта, не здесь.
 
-Тесты: `modules-ui.test.js` (аккордеон, табы, модалка, меню, тосты, тема),
-`modules-form.test.js` (форма и поля), `modules-motion.test.js` (анимации, слайдер, видео).
+Тесты: `modules-ui.test.js` (аккордеон, табы, модалка, меню, тосты, тема, cookies),
+`modules-form.test.js` (форма, поля, рейтинг), `modules-motion.test.js` (анимации, слайдер, видео).

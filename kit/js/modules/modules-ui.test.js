@@ -1,5 +1,5 @@
 /**
- * Тесты интерфейсных модулей: аккордеон, табы, модалка, меню, форма, тосты, тема.
+ * Тесты интерфейсных модулей: аккордеон, табы, модалка, меню, форма, тосты, тема, cookies.
  */
 import { describe, expect, it, vi } from 'vitest'
 import accordion from './accordion/index.js'
@@ -8,6 +8,8 @@ import dialog from './dialog/index.js'
 import menu from './menu/index.js'
 import toastTriggers, { toast } from './toast/index.js'
 import themeSwitch, { THEME_SCRIPT, currentTheme } from './theme-switch/index.js'
+import cookieConsent from './cookie-consent/index.js'
+import { getConsent, hasConsent, writeConsent } from '../core/consent.js'
 import { isScrollLocked, resetScrollLock } from '../core/scroll-lock.js'
 import { createCtx, html, key, tick, until } from '../../../test/helpers.js'
 
@@ -347,5 +349,178 @@ describe('theme-switch', () => {
     new Function(THEME_SCRIPT)()
     expect(document.documentElement.dataset.theme).toBe('dark')
     localStorage.clear()
+  })
+})
+
+const COOKIE = `
+  <section data-module="cookie-consent" hidden>
+    <div data-cookie-panel hidden>
+      <input type="checkbox" data-cookie-toggle="necessary" checked disabled>
+      <input type="checkbox" data-cookie-toggle="analytics">
+      <input type="checkbox" data-cookie-toggle="marketing">
+      <button data-cookie-save>Сохранить</button>
+    </div>
+    <button data-cookie-accept>Принять</button>
+    <button data-cookie-reject>Отказаться</button>
+    <button data-cookie-settings>Настроить</button>
+  </section>`
+
+describe('cookie-consent', () => {
+  const click = (root, selector) => root.querySelector(selector).click()
+  const cleanup = (api) => {
+    api.destroy()
+    localStorage.clear()
+  }
+
+  it('нет выбора — баннер показан; «Принять» разрешает всё, прячет и шлёт на сервер', async () => {
+    const send = vi.fn().mockResolvedValue(undefined)
+    const ctx = createCtx({ options: { send, version: '3' } })
+    const events = []
+    ctx.bus.on('cookie-consent:change', (record) => events.push(record.action))
+    const root = html(COOKIE)
+    const api = cookieConsent(root, ctx)
+    expect(root.hidden).toBe(false)
+    expect(hasConsent('analytics')).toBe(false)
+    expect(getConsent()).toBe(null)
+
+    click(root, '[data-cookie-accept]')
+    expect(root.hidden).toBe(true)
+    expect(api.consent.categories).toEqual({ necessary: true, analytics: true, marketing: true })
+    expect(events).toEqual(['accept'])
+    expect(api.consent.synced).toBe(false)
+    await tick()
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'accept', version: '3', categories: api.consent.categories, url: '/' }),
+    )
+    expect(api.consent.synced).toBe(true)
+    cleanup(api)
+  })
+
+  it('«Отказаться» оставляет только обязательные — и тоже шлёт на сервер', async () => {
+    const send = vi.fn().mockResolvedValue(undefined)
+    const root = html(COOKIE)
+    const api = cookieConsent(root, createCtx({ options: { send } }))
+    click(root, '[data-cookie-reject]')
+    expect(api.consent.categories).toEqual({ necessary: true, analytics: false, marketing: false })
+    await tick()
+    expect(send.mock.calls[0][0].action).toBe('reject')
+    cleanup(api)
+  })
+
+  it('настройки: панель раскрывается, сохраняется отмеченное; обязательную не снять', () => {
+    const root = html(COOKIE)
+    const api = cookieConsent(root, createCtx())
+    const panel = root.querySelector('[data-cookie-panel]')
+    const settings = root.querySelector('[data-cookie-settings]')
+    expect(settings.getAttribute('aria-controls')).toBe(panel.id)
+    settings.click()
+    expect(panel.hidden).toBe(false)
+    expect(settings.getAttribute('aria-expanded')).toBe('true')
+    root.querySelector('[data-cookie-toggle="analytics"]').checked = true
+    root.querySelector('[data-cookie-toggle="necessary"]').checked = false
+    click(root, '[data-cookie-save]')
+    expect(api.consent.action).toBe('custom')
+    expect(api.consent.categories).toEqual({ necessary: true, analytics: true, marketing: false })
+    cleanup(api)
+  })
+
+  it('выбор уже сделан — баннер скрыт; [data-cookie-open] открывает с текущим выбором, Esc закрывает', () => {
+    const root = html(COOKIE)
+    const opener = html('<button data-cookie-open>Настройки cookie</button>')
+    const first = cookieConsent(root, createCtx({ options: { reloadOnRevoke: false } }))
+    first.save({ marketing: true })
+    first.destroy()
+
+    const api = cookieConsent(root, createCtx({ options: { reloadOnRevoke: false } }))
+    expect(root.hidden).toBe(true)
+    opener.focus()
+    opener.click()
+    expect(api.isOpen).toBe(true)
+    expect(root.querySelector('[data-cookie-panel]').hidden).toBe(false)
+    expect(root.querySelector('[data-cookie-toggle="marketing"]').checked).toBe(true)
+    expect(root.querySelector('[data-cookie-toggle="analytics"]').checked).toBe(false)
+    expect(document.activeElement).toBe(root)
+    key(root, 'Escape')
+    expect(api.isOpen).toBe(false)
+    expect(document.activeElement).toBe(opener)
+    cleanup(api)
+  })
+
+  it('Esc не закрывает первый вопрос', () => {
+    const root = html(COOKIE)
+    const api = cookieConsent(root, createCtx())
+    key(root, 'Escape')
+    expect(api.isOpen).toBe(true)
+    cleanup(api)
+  })
+
+  it('сменилась версия политики или вышел срок — спрашиваем снова', () => {
+    const root = html(COOKIE)
+    cookieConsent(root, createCtx({ options: { version: '1', expires: 30 } })).accept()
+    expect(getConsent().expiresAt).toBeGreaterThan(Date.now() + 29 * 864e5)
+    const next = cookieConsent(root, createCtx({ options: { version: '2' } }))
+    expect(next.isOpen).toBe(true)
+    expect(getConsent()).toBe(null)
+    next.accept()
+    writeConsent({ ...getConsent(), expiresAt: Date.now() - 1 })
+    const expired = cookieConsent(root, createCtx({ options: { version: '2' } }))
+    expect(expired.isOpen).toBe(true)
+    cleanup(expired)
+  })
+
+  it('сервер недоступен — выбор действует, отправка повторяется при следующей загрузке', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const failing = vi.fn().mockRejectedValue(new Error('offline'))
+    const ctx = createCtx({ options: { send: failing } })
+    const errors = []
+    ctx.bus.on('cookie-consent:error', (payload) => errors.push(payload.error.message))
+    const root = html(COOKIE)
+    cookieConsent(root, ctx).accept()
+    await tick()
+    expect(errors).toEqual(['offline'])
+    expect(hasConsent('analytics')).toBe(true)
+    expect(getConsent().synced).toBe(false)
+
+    const send = vi.fn().mockResolvedValue(undefined)
+    const api = cookieConsent(root, createCtx({ options: { send } }))
+    await tick()
+    expect(send).toHaveBeenCalledTimes(1)
+    expect(getConsent().synced).toBe(true)
+    cleanup(api)
+  })
+
+  it('endpoint: POST с JSON; cookie-дубликат для сервера', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true })
+    vi.stubGlobal('fetch', fetchMock)
+    const root = html(COOKIE)
+    root.setAttribute('data-cookie-consent-endpoint', '/api/consent')
+    root.setAttribute('data-cookie-consent-cookie', 'consent')
+    const api = cookieConsent(root, createCtx())
+    root.querySelector('[data-cookie-toggle="analytics"]').checked = true
+    api.save()
+    await tick()
+    const [url, init] = fetchMock.mock.calls[0]
+    expect(url).toBe('/api/consent')
+    expect(init.method).toBe('POST')
+    expect(JSON.parse(init.body)).toMatchObject({ action: 'custom', categories: { analytics: true, marketing: false } })
+    expect(document.cookie).toContain(`consent=${encodeURIComponent('1:necessary,analytics')}`)
+    vi.unstubAllGlobals()
+    document.cookie = 'consent=; Max-Age=0; Path=/'
+    cleanup(api)
+  })
+
+  it('после согласия включает отложенные скрипты; без кнопки «Принять» — понятная ошибка', () => {
+    const root = html(COOKIE)
+    const holder = html(
+      '<div><script type="text/plain" data-cookie-category="analytics">document.body.dataset.ran = "1"</script></div>',
+    )
+    const api = cookieConsent(root, createCtx())
+    expect(holder.querySelector('script').type).toBe('text/plain')
+    api.accept()
+    expect(holder.querySelector('script').hasAttribute('type')).toBe(false)
+    expect(document.body.dataset.ran).toBe('1')
+    delete document.body.dataset.ran
+    expect(() => cookieConsent(html('<section></section>'))).toThrow(/data-cookie-accept/)
+    cleanup(api)
   })
 })

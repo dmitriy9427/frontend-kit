@@ -5,6 +5,15 @@
  */
 export { createApp } from './app.js'
 export { createBus } from './bus.js'
+export {
+  activateConsented,
+  clearConsent,
+  getConsent,
+  hasConsent,
+  onConsentChange,
+  whenConsent,
+  writeConsent,
+} from './consent.js'
 export { delegate, ensureId, focusable, qs, qsa, trapFocus, uid } from './dom.js'
 export {
   DEFAULT_BREAKPOINTS,

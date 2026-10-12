@@ -15,7 +15,8 @@ import dialog from 'kit/js/modules/dialog/index.js'
 import form from 'kit/js/modules/form/index.js'
 import { callbackSchema } from '../forms/schemas.js'
 
-const FORM_OPTIONS = { ajax: true, schema: callbackSchema }
+// antispam — ловушки для спам-ботов (docs/forms.md → «Защита от спама»).
+const FORM_OPTIONS = { ajax: true, antispam: true, schema: callbackSchema }
 
 export function CallbackDialog() {
   const dialogRef = useModule(dialog)

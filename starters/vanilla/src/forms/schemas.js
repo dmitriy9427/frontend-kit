@@ -43,6 +43,7 @@ export const uikitSchema = s
       .optional(),
     message: s.string().max(500).optional(),
     qty: s.number().int().min(1).max(10),
+    score: s.number().min(1, 'Поставьте оценку'),
     consent,
   })
   .refine((d) => d.contact !== 'email' || Boolean(d.email), { path: 'email', message: 'Укажите e-mail для связи' })

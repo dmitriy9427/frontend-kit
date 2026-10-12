@@ -172,6 +172,11 @@
               <button type="button" data-stepper-inc aria-label="Больше">+</button>
             </div>
           </div>
+          <div class="field" data-field>
+            <span class="field__label" id="score-label">Оценка шаблона</span>
+            <x-rating name="score" clearable aria-labelledby="score-label" />
+            <span class="field__hint">Группа radio: стрелки, схема формы; повторный клик снимает оценку</span>
+          </div>
           <fieldset class="choice-group" data-field>
             <legend>Как связаться</legend>
             <label class="choice"><input type="radio" name="contact" value="phone" /> Позвонить</label>
@@ -217,6 +222,204 @@
           </div>
           <p class="form-grid__wide" data-form-status role="status"></p>
         </form>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Рейтинг</h2>
+        <div class="cluster" style="--gap: 24px">
+          <x-rating value="4.3" />
+          <x-rating value="3.5" style="--rating-size: 32px; --rating-color: var(--color-accent)" />
+          <x-rating value="7" max="10" style="--rating-size: 16px" />
+        </div>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Выпадающие панели и выезжающая панель</h2>
+        <div class="cluster">
+          <button class="btn btn--secondary" data-module="popover" data-popover-target="uikit-menu">Меню</button>
+          <div id="uikit-menu" class="popover" role="menu" hidden>
+            <a role="menuitem" href="#main">Заказы</a>
+            <a role="menuitem" href="#main">Настройки</a>
+            <hr class="popover__separator" />
+            <button role="menuitem" type="button">Выйти</button>
+          </div>
+
+          <button
+            class="btn btn--secondary"
+            data-module="popover"
+            data-popover-target="uikit-hover"
+            data-popover-hover
+            data-popover-placement="bottom"
+          >
+            По наведению
+          </button>
+          <div id="uikit-hover" class="popover" hidden style="--popover-padding: 16px">
+            <p><b>Панель с любым содержимым</b></p>
+            <p class="muted">Открывается наведением (при мыши), кликом и с клавиатуры.</p>
+            <button class="btn btn--sm" type="button" data-popover-close>Понятно</button>
+          </div>
+
+          <button class="btn btn--secondary" data-dialog-open="uikit-drawer">Панель справа (drawer)</button>
+          <button class="btn btn--secondary" data-dialog-open="uikit-sheet">Шторка снизу</button>
+        </div>
+        <dialog
+          id="uikit-drawer"
+          class="dialog dialog--drawer"
+          data-module="dialog"
+          aria-labelledby="uikit-drawer-title"
+        >
+          <div class="dialog__box">
+            <div class="stack">
+              <button class="dialog__close" data-dialog-close aria-label="Закрыть"><x-icon name="close" /></button>
+              <h2 id="uikit-drawer-title" class="h3">Фильтры</h2>
+              <p class="muted">Та же модалка (фокус, Esc, #id в адресе), но прижата к краю: класс dialog--drawer.</p>
+              <label class="choice"><input type="checkbox" /> В наличии</label>
+              <label class="choice"><input type="checkbox" /> Со скидкой</label>
+              <button class="btn" data-dialog-close>Показать</button>
+            </div>
+          </div>
+        </dialog>
+        <dialog
+          id="uikit-sheet"
+          class="dialog dialog--drawer dialog--bottom"
+          data-module="dialog"
+          aria-labelledby="uikit-sheet-title"
+        >
+          <div class="dialog__box">
+            <div class="stack">
+              <button class="dialog__close" data-dialog-close aria-label="Закрыть"><x-icon name="close" /></button>
+              <h2 id="uikit-sheet-title" class="h3">Шторка снизу</h2>
+              <p class="muted">Класс dialog--bottom: удобно на телефоне — до кнопок дотягивается большой палец.</p>
+            </div>
+          </div>
+        </dialog>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Обратный отсчёт</h2>
+        <div class="countdown" data-module="countdown" data-countdown-minutes="15" data-countdown-key="uikit">
+          <div class="countdown__part">
+            <span class="countdown__value" data-countdown-minutes>15</span>
+            <span class="countdown__label" data-countdown-label="minutes">минут</span>
+          </div>
+          <div class="countdown__part">
+            <span class="countdown__value" data-countdown-seconds>00</span>
+            <span class="countdown__label" data-countdown-label="seconds">секунд</span>
+          </div>
+          <p data-countdown-ended hidden>Время вышло — предложение завершено</p>
+        </div>
+        <p class="muted">«Личный» таймер: 15 минут от первого визита, перезагрузка его не сбрасывает.</p>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Скопировать и поделиться</h2>
+        <div class="cluster" data-module="copy">
+          <code id="uikit-promo">PROMO2026</code>
+          <button
+            class="btn btn--secondary btn--sm"
+            data-copy
+            data-copy-target="#uikit-promo"
+            data-copy-message="Промокод скопирован"
+          >
+            <span data-copy-idle>Скопировать промокод</span><span data-copy-done>Скопировано ✓</span>
+          </button>
+          <button class="btn btn--secondary btn--sm" data-copy>Скопировать ссылку</button>
+        </div>
+        <div class="share" data-module="share" data-share-title="frontend-kit — шаблон для старта проектов">
+          <button class="btn btn--sm" type="button" data-share-native>Поделиться</button>
+          <a class="btn btn--secondary btn--sm" data-share-to="telegram">Telegram</a>
+          <a class="btn btn--secondary btn--sm" data-share-to="vk">ВКонтакте</a>
+          <a class="btn btn--secondary btn--sm" data-share-to="whatsapp">WhatsApp</a>
+          <a class="btn btn--secondary btn--sm" data-share-to="email">Почта</a>
+        </div>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">До / после</h2>
+        <div class="compare" data-module="compare" style="max-width: 720px">
+          <img
+            src="https://picsum.photos/seed/kit/1200/675"
+            alt="После: цветное фото"
+            width="1200"
+            height="675"
+            loading="lazy"
+          />
+          <img
+            class="compare__before"
+            src="https://picsum.photos/seed/kit/1200/675?grayscale"
+            alt="До: чёрно-белое фото"
+            width="1200"
+            height="675"
+            loading="lazy"
+          />
+          <span class="compare__label">До</span>
+          <span class="compare__label compare__label--after">После</span>
+          <span class="compare__handle" aria-hidden="true"></span>
+          <input class="compare__range" type="range" min="0" max="100" value="50" />
+        </div>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Показать ещё</h2>
+        <div id="uikit-more" class="stack" data-module="load-more">
+          <ul class="auto-grid uikit__list" data-load-more-list style="--min: 200px">
+            <li class="card">Новость 1</li>
+            <li class="card">Новость 2</li>
+            <li class="card">Новость 3</li>
+          </ul>
+          <div><a class="btn btn--secondary" href="/api/more?page=2" data-load-more-button>Показать ещё</a></div>
+          <p class="muted" data-load-more-status role="status"></p>
+        </div>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Видео по клику и карта</h2>
+        <div class="auto-grid" style="--min: 320px">
+          <div
+            class="embed"
+            data-module="embed"
+            data-embed-provider="youtube"
+            data-embed-id="aqz-KE-bpKQ"
+            data-embed-title="Big Buck Bunny"
+          >
+            <button class="embed__play" type="button" data-embed-play aria-label="Смотреть видео"></button>
+          </div>
+          <div class="map" data-module="map" data-map-zoom="15" style="--map-height: 100%">
+            <div data-map-marker data-lat="55.7539" data-lng="37.6208" data-title="Офис">
+              <b>Офис</b><br />Москва, Красная площадь, 1
+            </div>
+            <p>Москва, Красная площадь, 1</p>
+            <a href="https://yandex.ru/maps/?text=Москва, Красная площадь, 1" target="_blank" rel="noopener">
+              Открыть в Яндекс.Картах
+            </a>
+          </div>
+        </div>
+        <p class="muted">
+          Плеер YouTube грузится только по клику (до него — одна картинка-превью). Карта грузится, только когда до неё
+          докрутили; для продакшена нужен ключ API — data-map-apikey.
+        </p>
+      </section>
+
+      <section class="stack">
+        <h2 class="h3">Загрузка: скелетон и кнопка</h2>
+        <div class="auto-grid" style="--min: 240px" aria-busy="true">
+          <article class="stack" style="--gap: 12px">
+            <div class="skeleton" style="height: 140px"></div>
+            <p class="skeleton skeleton--text"></p>
+            <p class="skeleton skeleton--text"></p>
+          </article>
+          <article class="cluster">
+            <span class="skeleton skeleton--circle" style="width: 48px"></span>
+            <div style="flex: 1">
+              <p class="skeleton skeleton--text"></p>
+              <p class="skeleton skeleton--text"></p>
+            </div>
+          </article>
+        </div>
+        <div class="cluster">
+          <button class="btn" aria-busy="true" disabled>Отправить</button>
+          <button class="btn btn--secondary" aria-busy="true" disabled>Показать ещё</button>
+        </div>
       </section>
 
       <section class="stack">

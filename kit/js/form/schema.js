@@ -387,7 +387,7 @@ class FilesSchema extends Schema {
 // ─── Объект (вся форма) ─────────────────────────────────────────────────────
 export class ValidationError extends Error {
   constructor(errors) {
-    super(Object.values(errors)[0] ?? 'Ошибка проверки')
+    super(Object.values(errors)[0] ?? t('kit.schema.invalid'))
     this.errors = errors
   }
 }

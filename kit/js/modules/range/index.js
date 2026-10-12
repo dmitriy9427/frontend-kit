@@ -28,7 +28,7 @@
  */
 import { createDisposer } from '../../core/lifecycle.js'
 import { readOptions } from '../../core/options.js'
-import { getLocale } from '../../core/i18n.js'
+import { getLocale, t } from '../../core/i18n.js'
 
 const DEFAULTS = {
   /** Формат подписи: 'number' | 'price' | 'area' | '' (как есть). */
@@ -40,12 +40,14 @@ const DEFAULTS = {
 /** Подпись значения по формату. */
 export function formatRangeValue(value, format = 'number', suffix = '', locale = 'ru') {
   const n = Number(value)
+  const number = (x, digits) => new Intl.NumberFormat(locale, { maximumFractionDigits: digits }).format(x)
+  // Единицы («млн ₽», «м²») — из словаря kit.range.*: другой язык или валюта правятся в одном месте.
   if (format === 'price') {
     return n >= 1e6
-      ? `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(n / 1e6)} ${locale === 'ru' ? 'млн ₽' : 'M ₽'}`
-      : `${new Intl.NumberFormat(locale).format(n)} ₽`
+      ? t('kit.range.million', { value: number(n / 1e6, 1) })
+      : t('kit.range.price', { value: number(n, 3) })
   }
-  if (format === 'area') return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(n)} м²`
+  if (format === 'area') return t('kit.range.area', { value: number(n, 1) })
   if (format === 'number') return `${new Intl.NumberFormat(locale).format(n)}${suffix}`
   return `${value}${suffix}`
 }

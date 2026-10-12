@@ -1,0 +1,91 @@
+// Рейтинг звёздами (модуль rating). Вид меняется переменными:
+//   .rating { --rating-size: 32px; --rating-color: gold; }
+//   .rating { --rating-icon: url('/img/heart.svg'); }   ← своя фигура (любой SVG-силуэт)
+@use '../abstracts' as *;
+
+.rating {
+  --rating-size: #{rem(24px)};
+  --rating-color: var(--color-warning);
+  --rating-color-empty: var(--color-border);
+  --rating-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3.1-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z'/%3E%3C/svg%3E");
+
+  display: inline-flex;
+  align-items: center;
+  min-width: 0; // fieldset по умолчанию не сжимается
+  padding: 0;
+  margin: 0;
+  vertical-align: middle;
+  border: 0;
+  border-radius: radius('sm');
+
+  // Радио невидимы, а звезда обрезана маской — кольцо фокуса рисуем на всём блоке.
+  &:has(:focus-visible) {
+    outline: 2px solid color('focus');
+    outline-offset: 4px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+// ─── Показ: одна полоса, закрашенная на долю оценки, обрезана звёздами ──────
+.rating--readonly {
+  width: calc(var(--rating-max, 5) * var(--rating-size));
+  height: var(--rating-size);
+  background: linear-gradient(
+    90deg,
+    var(--rating-color) calc(var(--rating-value, 0) / var(--rating-max, 5) * 100%),
+    var(--rating-color-empty) 0
+  );
+  mask: var(--rating-icon) left center / var(--rating-size) var(--rating-size) repeat-x;
+}
+
+// ─── Выбор: звезда = label с radio внутри ───────────────────────────────────
+.rating__star {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--rating-size);
+  height: var(--rating-size);
+  cursor: pointer;
+  background: var(--rating-color-empty);
+  transition: background-color 0.15s;
+  mask: var(--rating-icon) center / contain no-repeat;
+
+  input {
+    @include cover;
+
+    margin: 0;
+    cursor: inherit;
+    opacity: 0;
+  }
+
+  // Закрашена выбранная звезда и все до неё («после меня есть выбранная»).
+  &:has(input:checked),
+  &:has(~ & input:checked) {
+    background: var(--rating-color);
+  }
+
+  .rating:disabled & {
+    cursor: default;
+  }
+}
+
+// Наведение показывает будущую оценку: сначала гасим все, потом красим до курсора.
+@media (hover: hover) and (pointer: fine) {
+  // .is-cleared — оценку только что сняли кликом: подсветку не показываем, пока курсор не уйдёт.
+  .rating:not(:disabled, .is-cleared):has(.rating__star:hover) .rating__star {
+    background: var(--rating-color-empty);
+
+    &:hover,
+    &:has(~ .rating__star:hover) {
+      background: var(--rating-color);
+    }
+  }
+}
+
+.rating__output {
+  margin-left: space(3);
+  font-size: rem(14px);
+  color: var(--color-muted);
+}

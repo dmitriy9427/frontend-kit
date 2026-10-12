@@ -1,0 +1,70 @@
+---
+/**
+ * Баннер согласия на cookies (модуль кита cookie-consent). Стоит в layouts/Base.astro —
+ * значит, на всех страницах.
+ *
+ *   <CookieBanner />
+ *   <CookieBanner version="2" endpoint="/api/consent" policyHref="/privacy" />
+ *
+ * version — версия политики: поменяли политику → поменяйте версию, баннер спросит снова.
+ * endpoint — куда отправляется выбор (и согласие, и отказ); в dev отвечает mocks/consent.js.
+ *
+ * Тексты — из словарей кита (kit/js/i18n, ключи kit.cookies.*) на языке страницы: они уже
+ * в HTML, без ожидания JS. Свой текст — передайте разметку иначе или поправьте словарь.
+ * Категории — чекбоксы data-cookie-toggle. Вид — переменные --cookie-*.
+ *
+ * Скрипты, которым нужно согласие:
+ *   <script is:inline type="text/plain" data-cookie-category="analytics">…</script>
+ * Изменить выбор позже — любая кнопка с data-cookie-open (есть в Footer).
+ */
+import ru from 'kit/js/i18n/ru.js'
+import en from 'kit/js/i18n/en.js'
+import { localePath, type Locale } from '../i18n/ui'
+
+interface Props {
+  version?: string
+  endpoint?: string
+  /** Адрес политики без языкового префикса ('/privacy'); без него ссылки «Подробнее» нет. */
+  policyHref?: string
+}
+
+const { version = '1', endpoint = '/api/consent', policyHref } = Astro.props
+const locale = (Astro.currentLocale ?? 'ru') as Locale
+const c = { ru, en }[locale].kit.cookies
+const options = [
+  { name: 'necessary', title: c.necessary, hint: c.necessaryHint, required: true },
+  { name: 'analytics', title: c.analytics, hint: c.analyticsHint },
+  { name: 'marketing', title: c.marketing, hint: c.marketingHint },
+]
+---
+
+<section
+  class="cookie"
+  data-module="cookie-consent"
+  data-cookie-consent-version={version}
+  data-cookie-consent-endpoint={endpoint}
+  aria-label={c.label}
+  hidden
+>
+  <p class="cookie__text">
+    {c.text}
+    {policyHref && <a href={localePath(locale, policyHref)}>{c.more}</a>}
+  </p>
+  <div class="cookie__panel" data-cookie-panel hidden>
+    {
+      options.map((option) => (
+        <label class="cookie__option">
+          <input type="checkbox" data-cookie-toggle={option.name} checked={option.required} disabled={option.required} />
+          <span class="cookie__option-title">{option.title}</span>
+          <span class="cookie__option-hint">{option.hint}</span>
+        </label>
+      ))
+    }
+    <button class="btn btn--secondary btn--sm" type="button" data-cookie-save>{c.save}</button>
+  </div>
+  <div class="cookie__actions">
+    <button class="btn btn--sm" type="button" data-cookie-accept>{c.accept}</button>
+    <button class="btn btn--secondary btn--sm" type="button" data-cookie-reject>{c.reject}</button>
+    <button class="btn btn--ghost btn--sm" type="button" data-cookie-settings>{c.settings}</button>
+  </div>
+</section>

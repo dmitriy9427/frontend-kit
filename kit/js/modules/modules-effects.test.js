@@ -47,6 +47,12 @@ describe('flip-filter', () => {
 })
 
 describe('lightbox', () => {
+  // Анимация длиной 0 завершается «на следующем кадре», но под нагрузкой одного кадра
+  // бывает мало — прокручиваем, пока окно не закроется.
+  const settle = (lightbox) => {
+    for (let i = 0; i < 10 && lightbox.isOpen; i += 1) gsap.ticker.tick()
+  }
+
   it('открывает картинку в окне, блокирует прокрутку, закрывается по Esc и возвращает картинку', () => {
     resetScrollLock()
     const card = html('<figure><img src="a.jpg" alt="Закат" width="400" height="300"></figure>')
@@ -75,6 +81,87 @@ describe('lightbox', () => {
     expect(api.lightbox.isOpen).toBe(true)
     expect(document.querySelector('.lightbox__title').textContent).toBe('Альфа')
     api.destroy()
+    resetScrollLock()
+  })
+
+  it('галерея: стрелки, клавиши и свайп листают по кругу; закрытие возвращает текущее фото в его ячейку', () => {
+    resetScrollLock()
+    const root = html(`<div>
+      <figure><img src="a.jpg" alt="A" data-lightbox></figure>
+      <figure><img src="b.jpg" alt="B" data-lightbox data-lightbox-title="Бета"></figure>
+      <figure><img src="c.jpg" alt="C" data-lightbox></figure></div>`)
+    const api = lightboxModule(root, createCtx({ reduced: true }))
+    const [a, b, c] = root.querySelectorAll('img')
+    const [cellA, cellB] = root.querySelectorAll('figure')
+    const frame = () => document.querySelector('.lightbox__frame')
+    a.click()
+    gsap.ticker.tick()
+    expect(document.querySelector('.lightbox__counter').textContent).toBe('1 / 3')
+    expect(document.querySelector('.lightbox__nav--next').hidden).toBe(false)
+
+    document.querySelector('[data-lightbox-next]').click()
+    expect(api.lightbox.current).toBe(b)
+    expect(frame().contains(b)).toBe(true)
+    expect(cellA.contains(a)).toBe(true) // предыдущее фото вернулось на место
+    expect(document.querySelector('.lightbox__title').textContent).toBe('Бета')
+    expect(document.querySelector('.lightbox__counter').textContent).toBe('2 / 3')
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))
+    expect(api.lightbox.current).toBe(a) // по кругу
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    expect(api.lightbox.current).toBe(c)
+
+    // Свайп влево → следующее; вертикальный жест не листает.
+    const swipe = (from, to) => {
+      frame().dispatchEvent(new MouseEvent('pointerdown', { clientX: from[0], clientY: from[1] }))
+      frame().dispatchEvent(new MouseEvent('pointerup', { clientX: to[0], clientY: to[1] }))
+    }
+    swipe([300, 100], [100, 110])
+    expect(api.lightbox.current).toBe(a)
+    swipe([300, 100], [240, 400])
+    expect(api.lightbox.current).toBe(a)
+
+    api.lightbox.next()
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    settle(api.lightbox)
+    expect(cellB.contains(b)).toBe(true)
+    expect(api.lightbox.isOpen).toBe(false)
+    api.destroy()
+    resetScrollLock()
+  })
+
+  it('одно фото — без стрелок и счётчика; data-lightbox-src догружает полный размер и возвращает миниатюру', () => {
+    resetScrollLock()
+    const loaders = []
+    vi.stubGlobal(
+      'Image',
+      class {
+        constructor() {
+          loaders.push(this)
+        }
+      },
+    )
+    const root = html(
+      '<div><img src="thumb.jpg" srcset="thumb.jpg 1x" alt="A" data-lightbox data-lightbox-src="/full.jpg"></div>',
+    )
+    const api = lightboxModule(root, createCtx({ reduced: true }))
+    const img = root.querySelector('img')
+    img.click()
+    gsap.ticker.tick()
+    expect(document.querySelector('.lightbox__nav--next').hidden).toBe(true)
+    expect(document.querySelector('.lightbox__counter').hidden).toBe(true)
+    expect(loaders[0].src).toBe('/full.jpg')
+    expect(img.getAttribute('src')).toBe('thumb.jpg') // до загрузки — миниатюра
+    loaders[0].onload()
+    expect(img.getAttribute('src')).toBe('/full.jpg')
+    expect(img.hasAttribute('srcset')).toBe(false)
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    settle(api.lightbox)
+    expect(img.getAttribute('src')).toBe('thumb.jpg')
+    expect(img.getAttribute('srcset')).toBe('thumb.jpg 1x')
+    api.destroy()
+    vi.unstubAllGlobals()
     resetScrollLock()
   })
 })

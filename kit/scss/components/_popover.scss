@@ -1,0 +1,83 @@
+// Выпадающая панель (модуль popover). Позицию ставит JS, вид — переменные:
+//   .popover { --popover-width: 320px; --popover-padding: 16px; }
+@use '../abstracts' as *;
+
+.popover {
+  --popover-width: #{rem(240px)};
+  --popover-padding: #{space(2)};
+  --popover-bg: var(--color-bg);
+  --popover-border: var(--color-border);
+  --popover-radius: #{radius('md')};
+  --popover-shadow: var(--shadow-md);
+
+  position: fixed;
+  inset: auto; // сброс стилей [popover] браузера (inset: 0; margin: auto)
+  z-index: z('popover');
+  width: max-content;
+  min-width: min(var(--popover-width), calc(100vw - 16px));
+  max-width: calc(100vw - 16px);
+  max-height: min(70svh, #{rem(480px)});
+  padding: var(--popover-padding);
+  margin: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  color: var(--color-text);
+  background: var(--popover-bg);
+  border: 1px solid var(--popover-border);
+  border-radius: var(--popover-radius);
+  box-shadow: var(--popover-shadow);
+  opacity: 0;
+  transition:
+    opacity 0.15s ease,
+    translate 0.15s ease;
+  translate: 0 -4px;
+
+  &[data-placement='top'] {
+    translate: 0 4px;
+  }
+
+  &.is-open {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// Пункт меню: ссылка или кнопка с role="menuitem".
+.popover [role^='menuitem'] {
+  @include reset-button;
+
+  display: flex;
+  gap: space(2);
+  align-items: center;
+  width: 100%;
+  padding: space(2) space(3);
+  text-align: left;
+  text-decoration: none;
+  border-radius: radius('sm');
+
+  @include hocus {
+    background: var(--color-surface);
+  }
+
+  &:focus-visible {
+    outline: 2px solid color('focus');
+    outline-offset: -2px;
+  }
+
+  &[aria-disabled='true'],
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.popover__separator {
+  height: 1px;
+  margin: space(2) 0;
+  background: var(--popover-border);
+  border: 0;
+}

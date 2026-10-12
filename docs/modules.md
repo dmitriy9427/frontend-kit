@@ -63,9 +63,20 @@ createApp({ modules: { ...kitModules, ...projectModules, ...components } })
 | [autosize](#autosize)                 | Textarea растёт по тексту                             | лениво   |
 | [char-counter](#char-counter)         | Счётчик символов                                      | лениво   |
 | [stepper](#stepper)                   | Поле количества − 1 +                                 | лениво   |
+| [rating](#rating)                     | Рейтинг звёздами: показ и выбор в форме               | лениво   |
 | [toast](#toast)                       | Уведомления (`toast()` из JS или кнопки `data-toast`) | лениво   |
 | [select](#select)                     | Красивый выпадающий список с поиском                  | лениво   |
 | [lang-switch](#lang-switch)           | Переключатель языка                                   | лениво   |
+| [cookie-consent](#cookie-consent)     | Баннер cookies: категории, отправка выбора на сервер  | лениво   |
+| [popover](#popover)                   | Выпадающая панель: меню, профиль, фильтр              | лениво   |
+| [scroll-spy](#scroll-spy)             | Подсветка пункта меню текущей секции                  | лениво   |
+| [countdown](#countdown)               | Обратный отсчёт до даты / личный таймер               | лениво   |
+| [copy](#copy)                         | Копирование в буфер (промокод, ссылка)                | лениво   |
+| [share](#share)                       | «Поделиться»: системное окно и ссылки на соцсети      | лениво   |
+| [compare](#compare)                   | Сравнение «до / после» со шторкой                     | лениво   |
+| [load-more](#load-more)               | «Показать ещё» / бесконечная лента                    | лениво   |
+| [embed](#embed)                       | Видео YouTube/Rutube/VK по клику                      | лениво   |
+| [map](#map)                           | Яндекс.Карта с ленивой загрузкой                      | лениво   |
 | [swiper](#swiper)                     | Swiper: петля, эффекты, миниатюры, автопрокрутка      | лениво   |
 | [infinite-slider](#infinite-slider)   | Бесконечная лента с инерцией (в т.ч. WebGL)           | лениво   |
 | [infinite-gallery](#infinite-gallery) | Бесконечная галерея, тянется во все стороны           | лениво   |
@@ -177,6 +188,16 @@ API: `open(i)`, `close(i)`, `toggle(i)`, `isOpen(i)`. Событие `accordion:
 запись в историю: «Назад» на телефоне закрывает окно.
 Настройки: `closeOnBackdrop` (true), `closeTimeout` (400), `hash` (true).
 API: `open()`, `close()`, `isOpen`. События `dialog:open`, `dialog:close`.
+
+**Выезжающая панель (drawer)** — та же модалка с классом-модификатором: фильтры, корзина, меню.
+Фокус, Esc, `#id` в адресе и блокировка прокрутки работают так же.
+
+```html
+<dialog id="filters" class="dialog dialog--drawer" data-module="dialog">…</dialog>
+<!-- справа; dialog--left — слева; dialog--bottom — «шторка» снизу -->
+```
+
+Ширина — `.dialog--drawer { --drawer-width: 480px }`.
 
 ### slider
 
@@ -339,6 +360,36 @@ API: `getValues()`, `validate()`, `validateField(name)`, `setErrors({})`, `clear
 </div>
 ```
 
+### rating
+
+Показ оценки — пустой элемент, звёзды рисует CSS (оценка может быть дробной):
+
+```html
+<span class="rating rating--readonly" data-module="rating" data-rating-value="4.3"></span>
+```
+
+Выбор — группа radio, по одному на звезду. Значение уходит с формой и проверяется схемой
+(`score: s.number().min(1, 'Поставьте оценку')`):
+
+```html
+<fieldset class="rating" data-module="rating" data-rating-clearable>
+  <legend class="visually-hidden">Оцените работу</legend>
+  <label class="rating__star"><input type="radio" name="score" value="1" /></label>
+  <label class="rating__star"><input type="radio" name="score" value="2" /></label>
+  <!-- … до 5 -->
+  <span class="rating__output" data-rating-output></span>
+  <!-- необязательно: «4 из 5» -->
+</fieldset>
+```
+
+В vanilla-стартере — компонент: `<x-rating value="4.3" />`, `<x-rating name="score" clearable />`.
+
+Настройки: `value`, `max` (5) — для показа; `clearable` — повторный клик по выбранной звезде
+(или Delete) снимает оценку. API: `value`, `set(n)`, `reset()`. Событие `rating:change`
+(`detail.value`, в шине — `{ el, name, value }`).
+
+Вид: `.rating { --rating-size: 32px; --rating-color: gold; --rating-icon: url('/img/heart.svg') }`.
+
 ### toast
 
 ```js
@@ -372,6 +423,225 @@ toast('Ошибка сети', { type: 'error', duration: 0 }) // 0 — пока
 
 Ссылками на языковые версии (сайты, SEO) или кнопками `data-lang="en"` (смена «на лету»).
 Подробно — [i18n.md](i18n.md).
+
+### cookie-consent
+
+Баннер согласия на cookies. Разметка — ваша, модуль ищет только `data-`атрибуты:
+
+```html
+<section
+  class="cookie"
+  data-module="cookie-consent"
+  hidden
+  data-cookie-consent-endpoint="/api/consent"
+  data-cookie-consent-version="1"
+  aria-label="Файлы cookie"
+>
+  <p class="cookie__text" data-i18n="kit.cookies.text">Мы используем cookie…</p>
+  <div class="cookie__panel" data-cookie-panel hidden>
+    <label class="cookie__option"
+      ><input type="checkbox" data-cookie-toggle="necessary" checked disabled /> Необходимые</label
+    >
+    <label class="cookie__option"><input type="checkbox" data-cookie-toggle="analytics" /> Аналитика</label>
+    <button data-cookie-save>Сохранить выбор</button>
+  </div>
+  <div class="cookie__actions">
+    <button data-cookie-accept>Принять все</button>
+    <button data-cookie-reject>Только необходимые</button>
+    <button data-cookie-settings>Настроить</button>
+  </div>
+</section>
+
+<button data-cookie-open>Настройки cookie</button>
+<!-- где угодно: изменить выбор позже -->
+```
+
+В vanilla-стартере это компонент `<x-cookie-banner />` (стоит в подвале).
+
+- **Категории** — чекбоксы `data-cookie-toggle`; `disabled` = обязательная. Добавить свою —
+  добавить чекбокс, JS не трогать.
+- **Сервер.** И согласие, и отказ уходят `POST`-ом на `endpoint`:
+  `{ id, action: 'accept' | 'reject' | 'custom', version, categories, date, url, locale }`.
+  Не дошло — выбор действует, отправка повторится при следующей загрузке. Свой формат —
+  `ctx.options.send = (payload) => fetch(…)`.
+- **Настройки:** `version` ('1' — сменили политику, смените версию: спросит снова), `expires`
+  (180 дней, 0 — бессрочно), `cookie` (имя cookie-копии для сервера: `1:necessary,analytics`),
+  `reloadOnRevoke` (true — перезагрузка при отзыве согласия).
+- **Скрипты, которым нужно согласие,** кладите в HTML выключенными — модуль включит их сам:
+
+  ```html
+  <script type="text/plain" data-cookie-category="analytics" src="https://mc.yandex.ru/metrika/tag.js"></script>
+  <iframe data-cookie-category="marketing" data-src="https://www.youtube.com/embed/…"></iframe>
+  ```
+
+- **Из своего кода:**
+
+  ```js
+  import { hasConsent, whenConsent, onConsentChange } from 'kit/js/core/consent.js'
+  whenConsent('analytics', () => initMetrika()) // сейчас или как только разрешат
+  ctx.bus.on('cookie-consent:change', (record) => …)
+  ```
+
+- **Тексты** — ключи `kit.cookies.*` ([i18n.md](i18n.md)); **вид** — переменные `--cookie-*`:
+  `.cookie { --cookie-width: 100%; --cookie-inset: 0; --cookie-radius: 0 }` — полоса во всю ширину.
+
+### popover
+
+Панель у кнопки. Модуль ставится на **кнопку**, панель — по id:
+
+```html
+<button class="btn btn--secondary" data-module="popover" data-popover-target="user-menu">Профиль</button>
+<div id="user-menu" class="popover" role="menu" hidden>
+  <a role="menuitem" href="/orders">Заказы</a>
+  <hr class="popover__separator" />
+  <button role="menuitem" type="button">Выйти</button>
+</div>
+```
+
+С `role="menu"` — меню: ↓ открывает с фокусом на первом пункте, стрелки и Home/End ходят по
+пунктам, выбор пункта закрывает. Без роли — панель с любым содержимым (форма фильтра);
+закрыть изнутри — `[data-popover-close]`.
+
+Настройки: `placement` ('bottom-start'), `offset` (8), `hover` (false — открывать наведением,
+только при мыши), `hoverDelay` (150), `closeOnSelect` (false), `matchWidth` (false).
+API: `open()`, `close()`, `toggle()`, `update()`, `isOpen`. События `popover:open`, `popover:close`.
+Вид: `.popover { --popover-width: 320px; --popover-padding: 16px }`.
+
+### scroll-spy
+
+```html
+<nav data-module="scroll-spy">
+  <a href="#about">О нас</a>
+  <a href="#price">Цены</a>
+</nav>
+```
+
+Ссылка секции, которая сейчас под шапкой, получает `aria-current="location"` и класс
+`is-active`. Высота шапки берётся из `--header-height`. Настройки: `offset` (16),
+`activeClass` ('is-active'). Событие `scroll-spy:change` (`detail.id`).
+
+### countdown
+
+```html
+<div class="countdown" data-module="countdown" data-countdown-to="2026-12-31T23:59:59+03:00">
+  <div class="countdown__part">
+    <span class="countdown__value" data-countdown-days>00</span>
+    <span class="countdown__label" data-countdown-label="days">дней</span>
+  </div>
+  <!-- hours, minutes, seconds — так же; ненужные части просто не пишите -->
+  <p data-countdown-ended hidden>Акция завершена</p>
+</div>
+```
+
+**Пишите часовой пояс** (`+03:00`), иначе у посетителей из разных городов срок будет разным.
+`data-countdown-label` — подпись со склонением (1 день, 2 дня, 5 дней) на языке страницы.
+«Личный» таймер: `data-countdown-minutes="15"` — отсчёт от первого визита, перезагрузка его не
+сбрасывает (`data-countdown-key` — если таких таймеров несколько). Событие `countdown:end`.
+
+### copy
+
+```html
+<body data-module="copy">
+  <button data-copy="PROMO2026">Скопировать промокод</button>
+  <button data-copy data-copy-target="#inn">Скопировать ИНН</button>
+  <!-- текст из элемента -->
+  <button data-copy>Скопировать ссылку на страницу</button>
+</body>
+```
+
+После клика — уведомление (свой текст: `data-copy-message`, без него: `data-copy-toast="false"`),
+класс `is-copied` на 2 с, событие `copy:done`. Смена иконки без JS:
+`<span data-copy-idle>📋</span><span data-copy-done>✓</span>`.
+Из кода: `import { copyText } from 'kit/js/modules/copy/index.js'`.
+
+### share
+
+```html
+<div class="share" data-module="share" data-share-title="Скидка 20% до пятницы">
+  <button class="btn" data-share-native>Поделиться</button>
+  <a data-share-to="telegram">Telegram</a>
+  <a data-share-to="vk">ВКонтакте</a>
+  <a data-share-to="whatsapp">WhatsApp</a>
+</div>
+```
+
+Ссылкам модуль проставляет `href` сам (без скриптов соцсетей). `[data-share-native]` открывает
+системное «Поделиться»; где его нет — копирует ссылку. По умолчанию делимся текущей страницей
+(канонический адрес, `<title>`); другое — `data-share-url`, `-title`, `-text`.
+Сети: telegram, vk, whatsapp, ok, viber, x, facebook, linkedin, email.
+
+### compare
+
+```html
+<div class="compare" data-module="compare">
+  <img src="after.jpg" alt="После ремонта" />
+  <img class="compare__before" src="before.jpg" alt="До ремонта" />
+  <span class="compare__handle" aria-hidden="true"></span>
+  <input class="compare__range" type="range" min="0" max="100" value="50" />
+</div>
+```
+
+Шторка — настоящий ползунок: работает мышью, пальцем и с клавиатуры. Начальное положение —
+`value` у input. Подписи в углах — `.compare__label` и `.compare__label--after`.
+Вид: `.compare { --compare-ratio: 4 / 3; --compare-handle: 56px; --compare-line: #fff }`.
+
+### load-more
+
+```html
+<div id="news" data-module="load-more">
+  <ul data-load-more-list>
+    <li>…</li>
+  </ul>
+  <a class="btn" href="/news?page=2" data-load-more-button>Показать ещё</a>
+  <p data-load-more-status role="status"></p>
+</div>
+```
+
+Кнопка — обычная ссылка на следующую страницу. Модуль скачивает её, берёт элементы такого же
+списка и следующую ссылку — **бэкенд менять не нужно**. Нет следующей ссылки — кнопка прячется.
+Сервер может ответить и JSON: `{ "html": "<li>…</li>", "next": "/api/news?page=3" }`.
+`data-load-more-auto` — догрузка при прокрутке (бесконечная лента). События `load-more:loaded`
+(`detail.items`, `detail.page`), `load-more:error`.
+
+### embed
+
+```html
+<div
+  class="embed"
+  data-module="embed"
+  data-embed-provider="youtube"
+  data-embed-id="dQw4w9WgXcQ"
+  data-embed-title="Обзор проекта"
+>
+  <img class="embed__poster" src="/img/video.jpg" alt="" loading="lazy" />
+  <button class="embed__play" type="button" data-embed-play aria-label="Смотреть видео"></button>
+</div>
+```
+
+До клика — только картинка: плеер и его скрипты грузятся по клику. Провайдеры: `youtube`, `rutube`,
+`vimeo`; любой другой (VK Видео) — готовой ссылкой `data-embed-src="https://vk.com/video_ext.php?…"`.
+Без своей картинки для YouTube берётся его превью. Пропорции: `.embed { --embed-ratio: 4 / 3 }`.
+В модалке видео останавливается при закрытии окна. API: `play()`, `stop()`.
+
+### map
+
+```html
+<div class="map" data-module="map" data-map-apikey="ваш-ключ" data-map-zoom="15">
+  <div data-map-marker data-lat="55.7558" data-lng="37.6173" data-title="Офис">
+    <b>Офис</b><br />Москва, Красная площадь, 1
+  </div>
+  <p>Москва, Красная площадь, 1</p>
+  <a href="https://yandex.ru/maps/?text=Москва, Красная площадь, 1">Открыть в Яндекс.Картах</a>
+</div>
+```
+
+API Яндекс.Карт грузится, только когда до блока докрутили. Метки — `[data-map-marker]`
+(`data-lat`, `data-lng`, `data-title`, `data-icon`; содержимое — текст балуна); несколько меток —
+карта покажет все. Адрес и ссылка видны до загрузки и остаются, если карта не загрузилась.
+Настройки: `apikey`, `center` (`[55.75, 37.61]`), `zoom` (15), `scrollZoom` (false), `touchDrag`
+(false), `consent` (категория cookies, без согласия на которую карта не грузится), `margin` (300).
+Высота: `.map { --map-height: 480px }`. Другая карта (2ГИС, Leaflet) —
+`ctx.options.create(el, { center, zoom, markers })`.
 
 ### swiper
 
@@ -440,6 +710,10 @@ toast('Ошибка сети', { type: 'error', duration: 0 }) // 0 — пока
 
 `<div data-module="lightbox"><img src="…" alt="…" data-lightbox data-lightbox-title="…" data-lightbox-meta="…"></div>`
 или из JS: `createLightbox().open(img, { title, meta, credit })`.
+
+Несколько фото в одном блоке — галерея: стрелки, ← →, свайп, счётчик «2 / 7». Закрытие возвращает
+фото в его ячейку. `data-lightbox-src="/img/full.jpg"` — в сетке миниатюра, в окне догружается
+полный размер. Из JS: `open(img, info, { group: [img1, img2], getInfo })`, `next()`, `prev()`.
 
 ### hscroll
 

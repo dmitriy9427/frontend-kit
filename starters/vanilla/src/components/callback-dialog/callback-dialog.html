@@ -6,6 +6,7 @@
     - из JS: (await ctx.modules.when('#callback', 'dialog')).open()  — см. price-calc.js.
   Правила полей — схема «callback» в src/forms/schemas.js.
   Форма отправляется на /api/callback — в dev отвечает мок (mocks/callback.js).
+  data-form-antispam — ловушки для спам-ботов (docs/forms.md → «Защита от спама»).
   Скрытое поле comment заполняет калькулятор (price-calc), если окно открыто из него.
 -->
 <dialog id="callback" class="dialog" data-module="dialog" aria-labelledby="callback-title">
@@ -17,6 +18,7 @@
       class="stack form"
       data-module="form"
       data-form-ajax
+      data-form-antispam
       data-form-schema="callback"
       action="/api/callback"
       method="post"

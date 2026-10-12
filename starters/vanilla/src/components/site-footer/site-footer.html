@@ -1,14 +1,16 @@
 <!--
-  Подвал + кнопка «наверх» + модалка обратной связи (она нужна на всех страницах).
+  Подвал + кнопка «наверх» + модалка обратной связи и баннер cookies (они нужны на всех страницах).
 -->
 <footer class="footer">
   <div class="container footer__inner">
     <p>© {{ year }} {{ site.name }}</p>
     <a href="tel:{{ site.phone.replace(/[^\d+]/g, '') }}"><x-icon name="phone" /> {{ site.phone }}</a>
     <a href="%BASE_URL%privacy.html">Политика конфиденциальности</a>
+    <button class="footer__link" type="button" data-cookie-open data-i18n="kit.cookies.open">Настройки cookie</button>
   </div>
 </footer>
 <button class="scroll-top" data-module="scroll-top" aria-label="Наверх" data-tooltip data-tooltip-placement="left">
   <x-icon name="arrow-up" />
 </button>
 <x-callback-dialog />
+<x-cookie-banner />

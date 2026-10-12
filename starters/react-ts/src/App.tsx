@@ -9,6 +9,7 @@ import { useKit } from 'kit/react/index.js'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 import { CallbackDialog } from './components/CallbackDialog'
+import { CookieBanner } from './components/CookieBanner'
 import { Home } from './pages/Home'
 
 // Страницы, нужные не всем, грузятся лениво — меньше стартовый бандл.
@@ -48,6 +49,7 @@ export function App() {
       </Suspense>
       <Footer />
       <CallbackDialog />
+      <CookieBanner />
     </>
   )
 }

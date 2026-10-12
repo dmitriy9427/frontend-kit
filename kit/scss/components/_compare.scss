@@ -1,0 +1,91 @@
+// Сравнение «до / после» (модуль compare). --compare (0–100%) ставит JS.
+//   .compare { --compare-ratio: 4 / 3; --compare-handle: 56px; --compare-line: #fff; }
+@use '../abstracts' as *;
+
+.compare {
+  --compare: 50%;
+  --compare-ratio: 16 / 9;
+  --compare-handle: #{rem(44px)};
+  --compare-line: #fff;
+
+  position: relative;
+  aspect-ratio: var(--compare-ratio);
+  overflow: hidden;
+  user-select: none;
+  border-radius: radius('lg');
+
+  img {
+    @include cover;
+    @include object-cover;
+
+    pointer-events: none; // картинку нельзя «утащить» мышью вместо шторки
+  }
+
+  // Кольцо фокуса — на всём блоке: сам ползунок невидим.
+  &:has(.compare__range:focus-visible) {
+    outline: 2px solid color('focus');
+    outline-offset: 2px;
+  }
+}
+
+// Верхняя картинка («до») обрезана справа по положению шторки.
+.compare__before {
+  clip-path: inset(0 calc(100% - var(--compare)) 0 0);
+}
+
+// Линия и круглая ручка.
+.compare__handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--compare);
+  width: 2px;
+  pointer-events: none;
+  background: var(--compare-line);
+  translate: -50% 0;
+
+  &::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--compare-handle);
+    height: var(--compare-handle);
+    content: '';
+    background: var(--compare-line)
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 7l-5 5 5 5M15 7l5 5-5 5'/%3E%3C/svg%3E")
+      center / 55% no-repeat;
+    border-radius: 50%;
+    box-shadow: var(--shadow-md);
+    translate: -50% -50%;
+  }
+}
+
+// Невидимый ползунок на весь блок: мышь, палец и клавиатура работают сами.
+.compare__range {
+  @include cover;
+
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  touch-action: pan-y; // вертикальная прокрутка страницы пальцем поверх блока
+  cursor: ew-resize;
+  opacity: 0;
+}
+
+// Подписи «До» / «После» в углах.
+.compare__label {
+  position: absolute;
+  bottom: space(3);
+  left: space(3);
+  padding: space(1) space(3);
+  font-size: rem(13px);
+  color: #fff;
+  pointer-events: none;
+  background: rgb(0 0 0 / 55%);
+  border-radius: radius('pill');
+
+  &--after {
+    right: space(3);
+    left: auto;
+  }
+}

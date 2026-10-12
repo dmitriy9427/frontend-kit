@@ -104,8 +104,11 @@ $z-layers-defaults: (
   'base': 1,
   'sticky': 100,
   'header': 200,
+  'popover': 250,
+  // если браузер без popover (иначе панель и так в верхнем слое)
   'menu': 300,
   'dialog': 400,
+  'cookie': 450,
   'toast': 500,
   'tooltip': 600,
   // если браузер без popover (иначе подсказка и так в верхнем слое)
