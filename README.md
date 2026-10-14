@@ -28,7 +28,7 @@
 | 🌐  | **i18n** — склонения, ru/en, hreflang и sitemap в Astro                                                                                                      |
 |  🛠  | **Dev-панель** — сетка, макет поверх вёрстки, FPS, проверка доступности — в прод не попадает                                                                 |
 | ⚡  | **4 стартера** — vanilla, React, React + TS, Astro — `npm run create`                                                                                        |
-| ✅  | **Качество** — 307 тестов, ESLint, Stylelint, проверка JSDoc-типов                                                                                           |
+| ✅  | **Качество** — 309 тестов, ESLint, Stylelint, проверка JSDoc-типов                                                                                           |
 
 Автор — [Дмитрий Рябов](https://dmitriy9427.github.io/resume/), frontend-разработчик.
 

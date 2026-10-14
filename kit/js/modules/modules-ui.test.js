@@ -130,6 +130,48 @@ describe('tabs', () => {
     api.destroy()
   })
 
+  it('смена высоты плавная: анимация от высоты «до» к высоте «после», быстрый клик отменяет прошлую', () => {
+    const root = html(TABS)
+    // В jsdom нет раскладки и element.animate — подставляем высоту по открытой панели.
+    const heights = { pa: 100, pb: 300, pc: 200 }
+    Object.defineProperty(root, 'offsetHeight', {
+      get: () => heights[[...root.querySelectorAll('[data-tabs-panel]')].find((p) => !p.hidden).id],
+    })
+    const calls = []
+    const fake = (el) => (frames, timing) => {
+      const animation = { frames, timing, cancel: vi.fn() }
+      calls.push({ el, animation })
+      return animation
+    }
+    root.animate = fake(root)
+    root.querySelectorAll('[data-tabs-panel]').forEach((p) => (p.animate = fake(p)))
+    const api = tabs(root, { reduced: false })
+    expect(calls).toHaveLength(0) // начальный выбор — без анимации
+
+    root.querySelectorAll('[data-tabs-tab]')[1].click()
+    const height = calls.find((c) => c.el === root).animation
+    expect(height.frames.map((f) => f.height)).toEqual(['100px', '300px'])
+    expect(calls.some((c) => c.el.id === 'pb')).toBe(true) // новая панель проявляется
+
+    root.querySelectorAll('[data-tabs-tab]')[2].click()
+    expect(height.cancel).toHaveBeenCalled()
+    api.destroy()
+  })
+
+  it('уменьшение движения и data-tabs-animate="false" — без анимации', () => {
+    for (const [markup, ctx] of [
+      [TABS, { reduced: true }],
+      [TABS.replace('data-module="tabs"', 'data-module="tabs" data-tabs-animate="false"'), { reduced: false }],
+    ]) {
+      const root = html(markup)
+      root.animate = vi.fn()
+      const api = tabs(root, ctx)
+      root.querySelectorAll('[data-tabs-tab]')[1].click()
+      expect(root.animate).not.toHaveBeenCalled()
+      api.destroy()
+    }
+  })
+
   it('вкладка хранится в ?параметре адреса: запись, чтение после «перезагрузки», вкладка по умолчанию не пишется', () => {
     const root = html(TABS.replace('data-module="tabs"', 'data-module="tabs" id="product"'))
     const api = tabs(root)

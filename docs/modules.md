@@ -169,7 +169,9 @@ API: `open(i)`, `close(i)`, `toggle(i)`, `isOpen(i)`. Событие `accordion:
 Открытая вкладка хранится в адресе: `?product=reviews` — после перезагрузки и по ссылке
 откроется она же. Имя параметра: `data-tabs-param` → `id` корня → `tab`. Значение:
 `data-tabs-value` вкладки → `id` панели → номер с 1. Вкладка по умолчанию в адрес не пишется.
-Настройки: `active` (0), `url` (true), `param`. API: `select(i)`, `index`. Событие `tabs:change`.
+Панели разной высоты переключаются без скачка: блок плавно меняет высоту, новая панель
+проявляется (Web Animations API, без GSAP; при «уменьшении движения» — мгновенно).
+Настройки: `active` (0), `url` (true), `param`, `animate` (true), `duration` (350). API: `select(i)`, `index`. Событие `tabs:change`.
 
 ### dialog
 
