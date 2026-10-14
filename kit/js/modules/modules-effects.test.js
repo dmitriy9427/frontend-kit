@@ -7,7 +7,7 @@ import flipFilter, { keepRoomFor, matchesFilter } from './flip-filter/index.js'
 import { createLightbox } from './lightbox/index.js'
 import lightboxModule from './lightbox/index.js'
 import hscroll, { travelDistance } from './hscroll/index.js'
-import stackCards, { stickyBlocker } from './stack-cards/index.js'
+import stackCards, { stackTop, stickyBlocker } from './stack-cards/index.js'
 import scrambleText from './scramble-text/index.js'
 import drawSvg from './draw-svg/index.js'
 import scrollProgress from './scroll-progress/index.js'
@@ -191,6 +191,26 @@ describe('hscroll, stack-cards, draw-svg, scroll-progress', () => {
     expect(wrap.querySelectorAll('[data-stack-card]')[1].style.getPropertyValue('--stack-index')).toBe('1')
     expect(warn).toHaveBeenCalled()
     api.destroy()
+  })
+
+  it('stack-cards: помещается — по центру под шапкой, выше экрана — null (не липнуть)', () => {
+    // Окно 800, шапка 64, карточка 400, отступы 16: запас 304 → по центру 64 + 16 + 152.
+    expect(stackTop(400, 800, 64, 0, 16)).toBe(232)
+    // «Корешок» стопки опускает карточку…
+    expect(stackTop(400, 800, 64, 24, 16)).toBe(256)
+    // …но не дальше запаса снизу: 12-я карточка (сдвиг 132) всё ещё помещается целиком.
+    expect(stackTop(400, 800, 64, 500, 16)).toBe(64 + 16 + 304)
+    // Карточка 726 на iPhone (окно 664) — не помещается.
+    expect(stackTop(726, 664, 64, 0, 16)).toBeNull()
+  })
+
+  it('stack-cards: слой затемнения во всех карточках, кроме последней; уборка', () => {
+    const root = html('<div><div data-stack-card></div><div data-stack-card></div><div data-stack-card></div></div>')
+    const api = stackCards(root, motion())
+    expect(root.querySelectorAll('.stack-cards__shade')).toHaveLength(2)
+    expect(root.lastElementChild.querySelector('.stack-cards__shade')).toBeNull()
+    api.destroy()
+    expect(root.querySelectorAll('.stack-cards__shade')).toHaveLength(0)
   })
 
   it('draw-svg и scroll-progress', () => {
