@@ -30,6 +30,23 @@
  *
  * Удалённые элементы React убирает сразу — исчезают без анимации, остальные
  * плавно занимают их место. «Меньше движения» — без анимации.
+ *
+ * ─── Быстрые клики (табы, фильтры) ─────────────────────────────────────────
+ * Новый клик посреди анимации: снимок берётся с элементов «как они сейчас на
+ * экране», потом прошлая анимация и проявление новых элементов доводятся до
+ * конца (иначе карточка застынет с промежуточным transform и прозрачностью),
+ * и новая анимация едет от снимка. Снимок без смены ключа (клик не поменял
+ * состав) выбрасывается — иначе он сработал бы на следующем изменении со
+ * старыми координатами.
+ *
+ * ─── Чужие анимации появления ──────────────────────────────────────────────
+ * Если у элементов есть своя анимация появления (CSS-переход translate/scale
+ * по классу), Flip замерит их посреди неё, а GSAP «запечёт» промежуточные
+ * translate/rotate/scale в inline-transform — элемент застынет. Поэтому:
+ *   - перед снимком контейнер шлёт событие 'flip:capture' (всплывает) —
+ *     скрипт появления должен по нему мгновенно закончить своё у детей;
+ *   - пока идёт перестановка, у контейнера есть атрибут data-flipping —
+ *     новые элементы скрипт появления не трогает (их проявляет onEnter).
  * @module kit/react/useFlip
  */
 import { useCallback, useLayoutEffect, useRef } from 'react'
@@ -51,33 +68,73 @@ export function useFlip(
 ) {
   const ref = useRef(null)
   const snapshot = useRef(null)
+  const running = useRef(null)
 
   const capture = useCallback(() => {
-    if (ref.current && !prefersReducedMotion()) snapshot.current = Flip.getState(ref.current.querySelectorAll(selector))
+    const el = ref.current
+    if (!el || prefersReducedMotion()) return
+    el.dispatchEvent(new CustomEvent('flip:capture', { bubbles: true }))
+    el.setAttribute('data-flipping', '')
+    snapshot.current = Flip.getState(el.querySelectorAll(selector))
   }, [selector])
 
   useLayoutEffect(() => {
     const state = snapshot.current
     snapshot.current = null
-    if (!state || !ref.current) return undefined
+    const el = ref.current
+    if (!state || !el) return undefined
+    // Прошлая анимация (быстрый второй клик) — до конца: снимок уже снят,
+    // а конечные места новой должны мериться по «чистым» элементам.
+    running.current?.()
+    const entering = []
+    const done = () => el.removeAttribute('data-flipping')
     const animation = Flip.from(state, {
-      targets: ref.current.querySelectorAll(selector),
+      targets: el.querySelectorAll(selector),
       duration,
       ease,
       absolute,
-      onEnter: (elements) =>
-        gsap.fromTo(
+      onEnter: (elements) => {
+        const tween = gsap.fromTo(
           elements,
           { opacity: 0, scale: 0.85 },
-          { opacity: 1, scale: 1, duration: duration * 0.8, ease: 'power2.out' },
-        ),
+          {
+            opacity: 1,
+            scale: 1,
+            duration: duration * 0.8,
+            ease: 'power2.out',
+            // Без следов: inline-transform перебил бы hover-эффекты из CSS.
+            clearProps: 'opacity,transform,translate,rotate,scale',
+          },
+        )
+        entering.push(tween)
+        return tween
+      },
+      onComplete: () => {
+        done()
+        running.current = null
+      },
     })
-    // Новое изменение посреди анимации — доводим старую до конца, иначе
-    // элементы останутся с промежуточными inline-стилями.
-    return () => {
+    const finish = () => {
       animation.progress(1).kill()
+      entering.forEach((tween) => tween.progress(1).kill())
+      done()
+      running.current = null
     }
+    running.current = finish
+    return undefined
   }, [key, selector, duration, ease, absolute])
+
+  // Снимок без смены ключа (клик не поменял состав) — выбрасываем после
+  // коммита, иначе он сработал бы на следующем изменении со старыми местами.
+  // Эффект объявлен после основного — React запускает их по порядку.
+  useLayoutEffect(() => {
+    if (!snapshot.current) return
+    snapshot.current = null
+    if (!running.current) ref.current?.removeAttribute('data-flipping')
+  })
+
+  // Размонтирование — доводим анимацию до конца.
+  useLayoutEffect(() => () => running.current?.(), [])
 
   return [ref, capture]
 }

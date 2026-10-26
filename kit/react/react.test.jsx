@@ -182,6 +182,33 @@ describe('без «плясок» вёрстки', () => {
     expect(from.mock.calls[0][1].targets).toHaveLength(3)
   })
 
+  it('useFlip: снимок без смены ключа выбрасывается; перед снимком — событие flip:capture', () => {
+    const from = vi.spyOn(Flip, 'from')
+    from.mockClear()
+    let captureList
+    const onCapture = vi.fn()
+    function List({ items, tick }) {
+      const [listRef, capture] = useFlip(items.join())
+      captureList = capture
+      return (
+        <ul ref={listRef} data-tick={tick}>
+          {items.map((i) => (
+            <li key={i}>{i}</li>
+          ))}
+        </ul>
+      )
+    }
+    const { container, rerender } = render(<List items={['a', 'b']} tick={0} />)
+    container.addEventListener('flip:capture', onCapture)
+    captureList()
+    expect(onCapture).toHaveBeenCalledTimes(1)
+    expect(container.querySelector('ul').hasAttribute('data-flipping')).toBe(true)
+    rerender(<List items={['a', 'b']} tick={1} />) // состав тот же — снимок выброшен
+    expect(container.querySelector('ul').hasAttribute('data-flipping')).toBe(false)
+    rerender(<List items={['b', 'a']} tick={2} />) // без нового снимка — без анимации
+    expect(from).not.toHaveBeenCalled()
+  })
+
   it('Expand: открыт/закрыт через data-open, закрытый — inert', () => {
     const { container, rerender } = render(
       <Expand open={false}>
